@@ -1,0 +1,752 @@
+[
+  {
+    "turn_id": 1,
+    "question": "What is the capital of France?",
+    "answer": "The capital of France is Paris."
+  },
+  {
+    "turn_id": 2,
+    "question": "How many continents are there on Earth?",
+    "answer": "There are seven continents on Earth."
+  },
+  {
+    "turn_id": 3,
+    "question": "What is the boiling point of water in Celsius?",
+    "answer": "Water boils at 100 degrees Celsius under standard atmospheric pressure."
+  },
+  {
+    "turn_id": 4,
+    "question": "Who wrote the play Romeo and Juliet?",
+    "answer": "Romeo and Juliet was written by William Shakespeare."
+  },
+  {
+    "turn_id": 5,
+    "question": "What is the chemical symbol for gold?",
+    "answer": "The chemical symbol for gold is Au, derived from the Latin word aurum."
+  },
+  {
+    "turn_id": 6,
+    "question": "Which planet is known as the Red Planet?",
+    "answer": "Mars is known as the Red Planet due to iron oxide on its surface."
+  },
+  {
+    "turn_id": 7,
+    "question": "What is the largest ocean on Earth?",
+    "answer": "The Pacific Ocean is the largest and deepest ocean on Earth."
+  },
+  {
+    "turn_id": 8,
+    "question": "How many bones are in the adult human body?",
+    "answer": "An adult human body has 206 bones."
+  },
+  {
+    "turn_id": 9,
+    "question": "What process do plants use to convert sunlight into food?",
+    "answer": "Plants use photosynthesis to convert sunlight, carbon dioxide, and water into glucose and oxygen."
+  },
+  {
+    "turn_id": 10,
+    "question": "What is the main gas found in the Earth's atmosphere?",
+    "answer": "Nitrogen makes up approximately 78% of Earth's atmosphere."
+  },
+  {
+    "turn_id": 11,
+    "question": "In what year did the Apollo 11 mission land on the Moon?",
+    "answer": "Apollo 11 landed astronauts on the Moon in 1969."
+  },
+  {
+    "turn_id": 12,
+    "question": "What is the currency used in Japan?",
+    "answer": "The currency of Japan is the Japanese Yen."
+  },
+  {
+    "turn_id": 13,
+    "question": "Who painted the Mona Lisa?",
+    "answer": "The Mona Lisa was painted by the Italian Renaissance artist Leonardo da Vinci."
+  },
+  {
+    "turn_id": 14,
+    "question": "What is the hardest natural mineral known?",
+    "answer": "Diamond is the hardest naturally occurring mineral on Mohs scale."
+  },
+  {
+    "turn_id": 15,
+    "question": "How many degrees are in a right angle?",
+    "answer": "A right angle contains exactly 90 degrees."
+  },
+  {
+    "turn_id": 16,
+    "question": "What is the speed of light in a vacuum?",
+    "answer": "The speed of light in a vacuum is approximately 299,792 kilometers per second."
+  },
+  {
+    "turn_id": 17,
+    "question": "What is the primary ingredient in traditional hummus?",
+    "answer": "The primary ingredient in hummus is chickpeas, blended with tahini, lemon juice, and garlic."
+  },
+  {
+    "turn_id": 18,
+    "question": "Which organ in the human body produces insulin?",
+    "answer": "The pancreas produces insulin to regulate blood glucose levels."
+  },
+  {
+    "turn_id": 19,
+    "question": "What is the square root of 144?",
+    "answer": "The principal square root of 144 is 12."
+  },
+  {
+    "turn_id": 20,
+    "question": "What is the capital of Australia?",
+    "answer": "The capital of Australia is Canberra."
+  },
+  {
+    "turn_id": 21,
+    "question": "Who developed the theory of general relativity?",
+    "answer": "Albert Einstein developed the theory of general relativity, published in 1915."
+  },
+  {
+    "turn_id": 22,
+    "question": "What is the longest river in the world?",
+    "answer": "The Nile River in northeastern Africa is generally considered the longest river."
+  },
+  {
+    "turn_id": 23,
+    "question": "What musical term indicates a slow tempo?",
+    "answer": "Terms like Adagio, Lento, or Largo indicate slow musical tempos."
+  },
+  {
+    "turn_id": 24,
+    "question": "How many players are on a standard soccer team on the pitch?",
+    "answer": "A standard soccer team fields 11 players on the pitch at one time."
+  },
+  {
+    "turn_id": 25,
+    "question": "What is the freezing point of water in Fahrenheit?",
+    "answer": "Water freezes at 32 degrees Fahrenheit."
+  },
+  {
+    "turn_id": 26,
+    "question": "Which country is home to the Great Barrier Reef?",
+    "answer": "The Great Barrier Reef is located off the coast of Queensland, Australia."
+  },
+  {
+    "turn_id": 27,
+    "question": "What do bees collect to produce honey?",
+    "answer": "Bees collect nectar and pollen from flowering plants."
+  },
+  {
+    "turn_id": 28,
+    "question": "Who is the author of 1984 and Animal Farm?",
+    "answer": "George Orwell is the author of both 1984 and Animal Farm."
+  },
+  {
+    "turn_id": 29,
+    "question": "What is the chemical formula for common table salt?",
+    "answer": "Table salt is sodium chloride, with the formula NaCl."
+  },
+  {
+    "turn_id": 30,
+    "question": "Which language has the most native speakers worldwide?",
+    "answer": "Mandarin Chinese has the largest number of native speakers globally."
+  },
+  {
+    "turn_id": 31,
+    "question": "What is the primary component of natural gas?",
+    "answer": "Methane (CH4) is the primary component of natural gas."
+  },
+  {
+    "turn_id": 32,
+    "question": "How many days are in a leap year?",
+    "answer": "A leap year has 366 days, with an extra day added to February."
+  },
+  {
+    "turn_id": 33,
+    "question": "What is the smallest prime number?",
+    "answer": "The smallest and only even prime number is 2."
+  },
+  {
+    "turn_id": 34,
+    "question": "What is the national animal of Canada?",
+    "answer": "The North American beaver is the national animal of Canada."
+  },
+  {
+    "turn_id": 35,
+    "question": "Which galaxy is closest to the Milky Way?",
+    "answer": "The Andromeda Galaxy is the closest major spiral galaxy to the Milky Way."
+  },
+  {
+    "turn_id": 36,
+    "question": "What is the powerhouse of the biological cell?",
+    "answer": "Mitochondria are often referred to as the powerhouses of eukaryotic cells."
+  },
+  {
+    "turn_id": 37,
+    "question": "Who was the first president of the United States?",
+    "answer": "George Washington served as the first president of the United States."
+  },
+  {
+    "turn_id": 38,
+    "question": "What is the SI unit of electrical resistance?",
+    "answer": "The ohm (symbol: Omega) is the SI unit of electrical resistance."
+  },
+  {
+    "turn_id": 39,
+    "question": "Which ancient civilization built the Colosseum in Rome?",
+    "answer": "The Colosseum was constructed by the Roman Empire during the Flavian dynasty."
+  },
+  {
+    "turn_id": 40,
+    "question": "What kind of instrument is a clarinet?",
+    "answer": "The clarinet is a woodwind instrument with a single-reed mouthpiece."
+  },
+  {
+    "turn_id": 41,
+    "question": "How many sides does a regular heptagon have?",
+    "answer": "A regular heptagon has seven equal sides."
+  },
+  {
+    "turn_id": 42,
+    "question": "What is the main metal found in stainless steel?",
+    "answer": "Iron is the main metal in stainless steel, alloyed with chromium and nickel."
+  },
+  {
+    "turn_id": 43,
+    "question": "What is the study of weather and atmospheric phenomena called?",
+    "answer": "The scientific study of weather is called meteorology."
+  },
+  {
+    "turn_id": 44,
+    "question": "What is the capital of Canada?",
+    "answer": "The capital of Canada is Ottawa."
+  },
+  {
+    "turn_id": 45,
+    "question": "Who discovered penicillin in 1928?",
+    "answer": "Alexander Fleming discovered penicillin in 1928 at St Mary's Hospital, London."
+  },
+  {
+    "turn_id": 46,
+    "question": "What is the deepest lake in the world?",
+    "answer": "Lake Baikal in southern Siberia, Russia, is the deepest lake on Earth."
+  },
+  {
+    "turn_id": 47,
+    "question": "What is the term for animals that eat both plants and meat?",
+    "answer": "Animals that eat both plant and animal matter are called omnivores."
+  },
+  {
+    "turn_id": 48,
+    "question": "What is the capital city of Spain?",
+    "answer": "Madrid is the capital and largest city of Spain."
+  },
+  {
+    "turn_id": 49,
+    "question": "How many millimeters are in one meter?",
+    "answer": "There are 1,000 millimeters in one meter."
+  },
+  {
+    "turn_id": 50,
+    "question": "What gas do humans exhale during normal respiration?",
+    "answer": "Humans exhale carbon dioxide along with unabsorbed nitrogen and oxygen."
+  },
+  {
+    "turn_id": 51,
+    "question": "Who wrote The Odyssey?",
+    "answer": "The Odyssey is attributed to the ancient Greek poet Homer."
+  },
+  {
+    "turn_id": 52,
+    "question": "What is the capital of Germany?",
+    "answer": "Berlin is the capital of Germany."
+  },
+  {
+    "turn_id": 53,
+    "question": "Which vitamin is synthesized by the human body upon exposure to sunlight?",
+    "answer": "Vitamin D is synthesized in the skin when exposed to ultraviolet B radiation."
+  },
+  {
+    "turn_id": 54,
+    "question": "What is the largest desert in the world?",
+    "answer": "The Antarctic Desert is the largest desert on Earth, followed by the Arctic Desert."
+  },
+  {
+    "turn_id": 55,
+    "question": "How many valves does a typical human heart have?",
+    "answer": "The human heart contains four valves: tricuspid, pulmonary, mitral, and aortic."
+  },
+  {
+    "turn_id": 56,
+    "question": "What is the capital of Brazil?",
+    "answer": "The capital of Brazil is Bras\u00edlia."
+  },
+  {
+    "turn_id": 57,
+    "question": "What is the chemical symbol for iron?",
+    "answer": "The chemical symbol for iron is Fe, from the Latin ferrum."
+  },
+  {
+    "turn_id": 58,
+    "question": "What type of star is the Sun?",
+    "answer": "The Sun is classified as a G-type main-sequence star, or yellow dwarf."
+  },
+  {
+    "turn_id": 59,
+    "question": "What is the currency of the United Kingdom?",
+    "answer": "The currency of the United Kingdom is the British Pound Sterling (GBP)."
+  },
+  {
+    "turn_id": 60,
+    "question": "Who wrote the novel Pride and Prejudice?",
+    "answer": "Pride and Prejudice was written by English novelist Jane Austen."
+  },
+  {
+    "turn_id": 61,
+    "question": "What is the most abundant element in the universe?",
+    "answer": "Hydrogen is the most abundant chemical element, making up roughly 75% of baryonic mass."
+  },
+  {
+    "turn_id": 62,
+    "question": "How many chambers does a cow's stomach have?",
+    "answer": "A cow has a four-compartment stomach consisting of the rumen, reticulum, omasum, and abomasum."
+  },
+  {
+    "turn_id": 63,
+    "question": "What is the capital of Egypt?",
+    "answer": "Cairo is the capital of Egypt."
+  },
+  {
+    "turn_id": 64,
+    "question": "Which organ filters blood to produce urine?",
+    "answer": "The kidneys filter metabolic waste and excess fluid from blood to produce urine."
+  },
+  {
+    "turn_id": 65,
+    "question": "What is the speed of sound in dry air at 20 degrees Celsius?",
+    "answer": "The speed of sound in air at 20 degrees Celsius is approximately 343 meters per second."
+  },
+  {
+    "turn_id": 66,
+    "question": "Who invented the telephone?",
+    "answer": "Alexander Graham Bell was awarded the first US patent for the telephone in 1876."
+  },
+  {
+    "turn_id": 67,
+    "question": "What is the capital of Italy?",
+    "answer": "Rome is the capital of Italy."
+  },
+  {
+    "turn_id": 68,
+    "question": "What is the basic unit of heredity in living organisms?",
+    "answer": "The gene is the fundamental physical and functional unit of heredity."
+  },
+  {
+    "turn_id": 69,
+    "question": "What is the tallest tree species in the world?",
+    "answer": "Coast redwoods (Sequoia sempervirens) are the tallest living trees on Earth."
+  },
+  {
+    "turn_id": 70,
+    "question": "What is the capital of South Korea?",
+    "answer": "Seoul is the capital of South Korea."
+  },
+  {
+    "turn_id": 71,
+    "question": "What is the chemical symbol for potassium?",
+    "answer": "The chemical symbol for potassium is K, from the neo-Latin kalium."
+  },
+  {
+    "turn_id": 72,
+    "question": "How many keys are on a standard full-size modern piano?",
+    "answer": "A standard piano features 88 keys: 52 white keys and 36 black keys."
+  },
+  {
+    "turn_id": 73,
+    "question": "What is the capital of India?",
+    "answer": "New Delhi is the capital of India."
+  },
+  {
+    "turn_id": 74,
+    "question": "Who formulated the three laws of planetary motion?",
+    "answer": "Johannes Kepler formulated the three empirical laws of planetary motion."
+  },
+  {
+    "turn_id": 75,
+    "question": "What is the main pigment responsible for photosynthesis in plants?",
+    "answer": "Chlorophyll a and b are the primary green pigments responsible for capturing light energy."
+  },
+  {
+    "turn_id": 76,
+    "question": "What is the capital of Mexico?",
+    "answer": "Mexico City is the capital of Mexico."
+  },
+  {
+    "turn_id": 77,
+    "question": "What is the pH value of pure distilled water at 25 degrees Celsius?",
+    "answer": "Pure water has a neutral pH of exactly 7.0."
+  },
+  {
+    "turn_id": 78,
+    "question": "What is the largest mammal on Earth?",
+    "answer": "The blue whale is the largest known animal ever to have existed."
+  },
+  {
+    "turn_id": 79,
+    "question": "What is the capital of Russia?",
+    "answer": "Moscow is the capital of Russia."
+  },
+  {
+    "turn_id": 80,
+    "question": "Who painted The Starry Night?",
+    "answer": "The Starry Night was painted by Dutch post-impressionist painter Vincent van Gogh in 1889."
+  },
+  {
+    "turn_id": 81,
+    "question": "What is the primary function of white blood cells?",
+    "answer": "White blood cells defend the organism against infectious diseases and foreign pathogens."
+  },
+  {
+    "turn_id": 82,
+    "question": "What is the capital of Argentina?",
+    "answer": "Buenos Aires is the capital of Argentina."
+  },
+  {
+    "turn_id": 83,
+    "question": "How many centimeters are in an inch?",
+    "answer": "There are exactly 2.54 centimeters in one inch by international definition."
+  },
+  {
+    "turn_id": 84,
+    "question": "What is the chemical symbol for silver?",
+    "answer": "The chemical symbol for silver is Ag, derived from the Latin argentum."
+  },
+  {
+    "turn_id": 85,
+    "question": "What is the capital of Turkey?",
+    "answer": "Ankara is the capital of Turkey."
+  },
+  {
+    "turn_id": 86,
+    "question": "What force pulls objects toward the center of the Earth?",
+    "answer": "Gravity is the fundamental force attracting objects with mass toward Earth's center."
+  },
+  {
+    "turn_id": 87,
+    "question": "What is the capital of South Africa?",
+    "answer": "South Africa has three capitals: Pretoria (executive), Cape Town (legislative), and Bloemfontein (judicial)."
+  },
+  {
+    "turn_id": 88,
+    "question": "Who proposed the law of universal gravitation?",
+    "answer": "Sir Isaac Newton formulated the law of universal gravitation in his Principia Mathematica in 1687."
+  },
+  {
+    "turn_id": 89,
+    "question": "What is the capital of Norway?",
+    "answer": "Oslo is the capital of Norway."
+  },
+  {
+    "turn_id": 90,
+    "question": "What type of rock is formed from cooled magma or lava?",
+    "answer": "Igneous rock is formed through the cooling and solidification of magma or lava."
+  },
+  {
+    "turn_id": 91,
+    "question": "What is the capital of Sweden?",
+    "answer": "Stockholm is the capital of Sweden."
+  },
+  {
+    "turn_id": 92,
+    "question": "How many chromosomes are in a typical human somatic cell?",
+    "answer": "Human somatic cells contain 46 chromosomes organized into 23 pairs."
+  },
+  {
+    "turn_id": 93,
+    "question": "What is the capital of Greece?",
+    "answer": "Athens is the capital of Greece."
+  },
+  {
+    "turn_id": 94,
+    "question": "What is the chemical symbol for lead?",
+    "answer": "The chemical symbol for lead is Pb, from the Latin plumbum."
+  },
+  {
+    "turn_id": 95,
+    "question": "What is the capital of New Zealand?",
+    "answer": "Wellington is the capital of New Zealand."
+  },
+  {
+    "turn_id": 96,
+    "question": "Who wrote the play Hamlet?",
+    "answer": "William Shakespeare wrote the tragedy of Hamlet, Prince of Denmark."
+  },
+  {
+    "turn_id": 97,
+    "question": "What is the capital of Thailand?",
+    "answer": "Bangkok is the capital of Thailand."
+  },
+  {
+    "turn_id": 98,
+    "question": "What is the most ductile metal?",
+    "answer": "Gold is the most ductile and malleable metal known."
+  },
+  {
+    "turn_id": 99,
+    "question": "What is the capital of Switzerland?",
+    "answer": "Bern is the de facto capital (federal city) of Switzerland."
+  },
+  {
+    "turn_id": 100,
+    "question": "What is the main function of hemoglobin?",
+    "answer": "Hemoglobin transports oxygen from the lungs to tissues throughout the body."
+  },
+  {
+    "turn_id": 101,
+    "question": "What is the capital of Austria?",
+    "answer": "Vienna is the capital of Austria."
+  },
+  {
+    "turn_id": 102,
+    "question": "What is the study of fossils called?",
+    "answer": "Paleontology is the scientific study of the history of life through fossil remains."
+  },
+  {
+    "turn_id": 103,
+    "question": "What is the capital of Portugal?",
+    "answer": "Lisbon is the capital of Portugal."
+  },
+  {
+    "turn_id": 104,
+    "question": "How many days does it take for Earth to orbit the Sun?",
+    "answer": "Earth completes one solar orbit in approximately 365.25 days."
+  },
+  {
+    "turn_id": 105,
+    "question": "What is the capital of Denmark?",
+    "answer": "Copenhagen is the capital of Denmark."
+  },
+  {
+    "turn_id": 106,
+    "question": "What is the chemical symbol for helium?",
+    "answer": "The chemical symbol for helium is He."
+  },
+  {
+    "turn_id": 107,
+    "question": "What is the capital of Poland?",
+    "answer": "Warsaw is the capital of Poland."
+  },
+  {
+    "turn_id": 108,
+    "question": "Who discovered the structure of the DNA double helix?",
+    "answer": "James Watson and Francis Crick, with vital contributions from Rosalind Franklin, identified the double helix structure in 1953."
+  },
+  {
+    "turn_id": 109,
+    "question": "What is the capital of Ireland?",
+    "answer": "Dublin is the capital of Ireland."
+  },
+  {
+    "turn_id": 110,
+    "question": "What is the smallest unit of matter retaining chemical properties?",
+    "answer": "The atom is the smallest unit of ordinary matter that forms a chemical element."
+  },
+  {
+    "turn_id": 111,
+    "question": "What is the capital of Finland?",
+    "answer": "Helsinki is the capital of Finland."
+  },
+  {
+    "turn_id": 112,
+    "question": "What is the hardest substance in the human body?",
+    "answer": "Tooth enamel is the hardest and most mineralized substance in the human body."
+  },
+  {
+    "turn_id": 113,
+    "question": "What is the capital of Belgium?",
+    "answer": "Brussels is the capital of Belgium."
+  },
+  {
+    "turn_id": 114,
+    "question": "What is the SI unit of force?",
+    "answer": "The newton (symbol: N) is the international standard unit of force."
+  },
+  {
+    "turn_id": 115,
+    "question": "What is the capital of the Netherlands?",
+    "answer": "Amsterdam is the constitutional capital of the Netherlands."
+  },
+  {
+    "turn_id": 116,
+    "question": "Which gas makes bread dough rise during fermentation?",
+    "answer": "Carbon dioxide gas produced by yeast respiration causes bread dough to expand and rise."
+  },
+  {
+    "turn_id": 117,
+    "question": "What is the capital of Chile?",
+    "answer": "Santiago is the capital of Chile."
+  },
+  {
+    "turn_id": 118,
+    "question": "What is the name of the nearest star to Earth?",
+    "answer": "The Sun is the closest star; outside our solar system, Proxima Centauri is nearest."
+  },
+  {
+    "turn_id": 119,
+    "question": "What is the capital of Colombia?",
+    "answer": "Bogot\u00e1 is the capital of Colombia."
+  },
+  {
+    "turn_id": 120,
+    "question": "How many degrees are the angles in an equilateral triangle?",
+    "answer": "Each interior angle of an equilateral triangle measures exactly 60 degrees."
+  },
+  {
+    "turn_id": 121,
+    "question": "What is the capital of Peru?",
+    "answer": "Lima is the capital of Peru."
+  },
+  {
+    "turn_id": 122,
+    "question": "What is the chemical symbol for sodium?",
+    "answer": "The chemical symbol for sodium is Na, from the Latin natrium."
+  },
+  {
+    "turn_id": 123,
+    "question": "What is the capital of Morocco?",
+    "answer": "Rabat is the capital of Morocco."
+  },
+  {
+    "turn_id": 124,
+    "question": "What is the largest internal organ in the human body?",
+    "answer": "The liver is the largest internal organ and the largest gland in the body."
+  },
+  {
+    "turn_id": 125,
+    "question": "What is the capital of Kenya?",
+    "answer": "Nairobi is the capital of Kenya."
+  },
+  {
+    "turn_id": 126,
+    "question": "What is the term for molten rock beneath the Earth's surface?",
+    "answer": "Molten rock beneath the Earth's crust is called magma; once erupted, it is called lava."
+  },
+  {
+    "turn_id": 127,
+    "question": "What is the capital of Nigeria?",
+    "answer": "Abuja is the capital of Nigeria."
+  },
+  {
+    "turn_id": 128,
+    "question": "Who wrote The Great Gatsby?",
+    "answer": "The Great Gatsby was written by American novelist F. Scott Fitzgerald."
+  },
+  {
+    "turn_id": 129,
+    "question": "What is the capital of Vietnam?",
+    "answer": "Hanoi is the capital of Vietnam."
+  },
+  {
+    "turn_id": 130,
+    "question": "What is the SI unit of electric current?",
+    "answer": "The ampere (symbol: A) is the base SI unit of electric current."
+  },
+  {
+    "turn_id": 131,
+    "question": "What is the capital of the Philippines?",
+    "answer": "Manila is the capital of the Philippines."
+  },
+  {
+    "turn_id": 132,
+    "question": "What is the primary source of energy for Earth's climate system?",
+    "answer": "Solar radiation from the Sun drives Earth's climate and weather patterns."
+  },
+  {
+    "turn_id": 133,
+    "question": "What is the capital of Indonesia?",
+    "answer": "Jakarta is the current capital of Indonesia."
+  },
+  {
+    "turn_id": 134,
+    "question": "What is the term for animals that only consume plants?",
+    "answer": "Animals that eat exclusively vegetation are classified as herbivores."
+  },
+  {
+    "turn_id": 135,
+    "question": "What is the capital of Malaysia?",
+    "answer": "Kuala Lumpur is the national capital of Malaysia."
+  },
+  {
+    "turn_id": 136,
+    "question": "Which organelle is responsible for cellular protein synthesis?",
+    "answer": "Ribosomes are the macromolecular machines that synthesize proteins from amino acids."
+  },
+  {
+    "turn_id": 137,
+    "question": "What is the capital of Saudi Arabia?",
+    "answer": "Riyadh is the capital of Saudi Arabia."
+  },
+  {
+    "turn_id": 138,
+    "question": "What is the term for a word that reads the same forwards and backwards?",
+    "answer": "A word or phrase that reads the same backwards as forwards is a palindrome."
+  },
+  {
+    "turn_id": 139,
+    "question": "What is the capital of the United Arab Emirates?",
+    "answer": "Abu Dhabi is the capital of the United Arab Emirates."
+  },
+  {
+    "turn_id": 140,
+    "question": "What is the acceleration due to gravity on Earth's surface?",
+    "answer": "Standard acceleration due to gravity is approximately 9.80665 meters per second squared."
+  },
+  {
+    "turn_id": 141,
+    "question": "What is the capital of Singapore?",
+    "answer": "Singapore is a city-state, so Singapore is its own capital."
+  },
+  {
+    "turn_id": 142,
+    "question": "What is the primary gas in the atmosphere of Venus?",
+    "answer": "Carbon dioxide constitutes about 96.5% of the atmosphere of Venus."
+  },
+  {
+    "turn_id": 143,
+    "question": "What is the capital of Israel?",
+    "answer": "Jerusalem is recognized by Israel as its capital."
+  },
+  {
+    "turn_id": 144,
+    "question": "Who discovered the circulation of blood in the human body?",
+    "answer": "William Harvey described systemic blood circulation pumped by the heart in 1628."
+  },
+  {
+    "turn_id": 145,
+    "question": "What is the capital of Jordan?",
+    "answer": "Amman is the capital of Jordan."
+  },
+  {
+    "turn_id": 146,
+    "question": "What is the SI unit of frequency?",
+    "answer": "The hertz (symbol: Hz) is the SI unit of frequency, defined as cycles per second."
+  },
+  {
+    "turn_id": 147,
+    "question": "What is the capital of Lebanon?",
+    "answer": "Beirut is the capital of Lebanon."
+  },
+  {
+    "turn_id": 148,
+    "question": "What type of macromolecule are enzymes predominantly made of?",
+    "answer": "Enzymes are predominantly globular proteins, although catalytic RNA (ribozymes) also exists."
+  },
+  {
+    "turn_id": 149,
+    "question": "What is the capital of Qatar?",
+    "answer": "Doha is the capital of Qatar."
+  },
+  {
+    "turn_id": 150,
+    "question": "What is the study of earthquakes called?",
+    "answer": "Seismology is the scientific study of earthquakes and elastic wave propagation through Earth."
+  }
+]

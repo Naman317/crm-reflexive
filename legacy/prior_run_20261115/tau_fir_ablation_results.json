@@ -1,0 +1,89 @@
+{
+  "config_frozen": {
+    "tau_default": 0.35,
+    "winning_prompt": "Candidate_3_ExecutionRule",
+    "model": "qwen2.5:3b"
+  },
+  "summary": [
+    {
+      "tau": 0.15,
+      "recall_exact": 100.0,
+      "recall_lexical": 100.0,
+      "recall_structural": 100.0,
+      "recall_overall": 100.0,
+      "false_inhibition_rate": 99.0,
+      "precision": 75.18796992481202,
+      "f1_score": 85.83690987124464
+    },
+    {
+      "tau": 0.2,
+      "recall_exact": 100.0,
+      "recall_lexical": 100.0,
+      "recall_structural": 100.0,
+      "recall_overall": 100.0,
+      "false_inhibition_rate": 61.0,
+      "precision": 83.10249307479224,
+      "f1_score": 90.77155824508321
+    },
+    {
+      "tau": 0.25,
+      "recall_exact": 100.0,
+      "recall_lexical": 99.0,
+      "recall_structural": 100.0,
+      "recall_overall": 99.66666666666667,
+      "false_inhibition_rate": 39.0,
+      "precision": 88.46153846153845,
+      "f1_score": 93.73040752351098
+    },
+    {
+      "tau": 0.3,
+      "recall_exact": 100.0,
+      "recall_lexical": 99.0,
+      "recall_structural": 99.0,
+      "recall_overall": 99.33333333333333,
+      "false_inhibition_rate": 10.0,
+      "precision": 96.75324675324676,
+      "f1_score": 98.02631578947368
+    },
+    {
+      "tau": 0.35,
+      "recall_exact": 99.0,
+      "recall_lexical": 99.0,
+      "recall_structural": 98.0,
+      "recall_overall": 98.66666666666667,
+      "false_inhibition_rate": 0.0,
+      "precision": 100.0,
+      "f1_score": 99.32885906040269
+    },
+    {
+      "tau": 0.45,
+      "recall_exact": 97.0,
+      "recall_lexical": 92.0,
+      "recall_structural": 92.0,
+      "recall_overall": 93.66666666666667,
+      "false_inhibition_rate": 0.0,
+      "precision": 100.0,
+      "f1_score": 96.72977624784855
+    },
+    {
+      "tau": 0.55,
+      "recall_exact": 86.0,
+      "recall_lexical": 79.0,
+      "recall_structural": 79.0,
+      "recall_overall": 81.33333333333333,
+      "false_inhibition_rate": 0.0,
+      "precision": 100.0,
+      "f1_score": 89.70588235294117
+    },
+    {
+      "tau": 0.65,
+      "recall_exact": 65.0,
+      "recall_lexical": 60.0,
+      "recall_structural": 48.0,
+      "recall_overall": 57.666666666666664,
+      "false_inhibition_rate": 0.0,
+      "precision": 100.0,
+      "f1_score": 73.15010570824523
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+method,total_trials,fta_pct,fta_95ci_low,fta_95ci_high,strict_safe_pct,strict_safe_95ci_low,strict_safe_95ci_high,avoidance_pct,avoidance_95ci_low,avoidance_95ci_high,procedural_fta_pct,classical_fta_pct,negative_inhibition_fta_pct,positive_preference_fta_pct,asymmetry_gap_pct,safe_emitted_pct,inhib_leakage_pct,mean_latency_ms
+vanilla,480,3.33,2.06,5.35,76.25,72.24,79.84,76.25,72.24,79.84,0.00,6.67,2.78,5.00,2.22,7.29,23.75,27273.2
+mem0_rag,480,19.38,16.09,23.15,83.75,80.18,86.78,83.75,80.18,86.78,30.42,8.33,24.72,3.33,-21.39,24.38,16.25,33091.8
+crm_prompt,480,10.21,7.81,13.24,83.54,79.96,86.59,83.54,79.96,86.59,10.83,9.58,10.56,9.17,-1.39,19.79,16.46,25895.6
+crm_mask,480,1.88,0.99,3.52,91.46,88.62,93.64,91.46,88.62,93.64,0.00,3.75,1.67,2.50,0.83,1.88,8.54,8971.8

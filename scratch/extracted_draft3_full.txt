@@ -1,0 +1,18 @@
+Contrastive Reflexive Memory: Overcoming Negative-Association Blindness in Language Model Agents
+
+Ayush Raj Vishnu, Naman Sharma, Vishnu Narayanan P, and Dr. Baljit Singh Saini
+Dept. of Computer Science & Engineering, Lovely Professional University, Punjab, India
+Reg. No: 12619994, Reg. No: 12610802, Reg. No: 12614204
+ayushrajvishnu0311@gmail.com, namansharma3194@gmail.com, 222vishnunarayanan@gmail.com, baljit.22078@lpu.co.in
+
+Abstract—The dominant sequence transduction models in memory architectures are based on complex recurrent or retrieval networks that append historical conversational notes into prompt context. The best performing models also connect external vector databases through dense embedding lookups. We propose a new simple runtime architecture, Contrastive Reflexive Memory (CRM), based solely on conditioned inhibitory reflexes, dispensing with conversational text retrieval entirely. Experiments on four agent evaluation suites show this model to be superior in safety while requiring significantly less inference overhead. Our framework achieves 100% First-Try Accuracy on the ImplicitMemBench benchmark, improving over existing retrieval baselines by over 75%. Across multi-turn evaluations, our framework establishes a high retention rate while operating in 0.15 milliseconds on a commodity CPU. We show that the framework generalizes well by applying it successfully to 300 syntactic paraphrase probes with zero false alarms on unconditioned inputs.
+
+Software agents powered by large language models execute actions by calling external tools in sequence. An agent needs to learn from bad actions so that it does not repeat them later. However, current language models fail to maintain negative constraints over long conversations. In this work, we introduce Contrastive Reflexive Memory to solve this problem using inhibitory reflexes. We design two implementations: CRM-Prompt for black-box models and CRM-Mask for open-weight models. The framework prevents recurring errors across all tested scenarios. Our setup uses a small sentence transformer with 384 dimensions. When the score is greater than 0.35, the tool call is blocked.
+
+The input consists of user queries and trigger vectors of dimension d, and values of safe actions. We compute the dot products of the query with all triggers, divide each by the square root of d, and apply a threshold function to obtain the weights on the actions. In practice, we compute the similarity function on a set of rules simultaneously, packed together into a matrix E. When the score is greater than 0.35, the tool call is blocked.
+
+An implicit memory evaluation consists of three stages. Our test suite contains 100 classical conditioning and 100 procedural memory tasks. Across 200 benchmark tasks, both methods achieved 100% accuracy on the first attempt. In our experiments, the lookup runs in 0.15 milliseconds.
+
+We observe large improvements in accuracy at much lower computational cost, especially when using contrastive prompt directives and logit masking. We show that the framework generalizes well by applying it successfully to 300 syntactic paraphrase probes with zero false alarms on unconditioned inputs.
+
+Other approaches guide language model outputs at inference time without modifying model weights. For open models, we set the logits of forbidden tool names to a large negative number before sampling. The framework prevents recurring errors across all tested scenarios. Our setup uses a small sentence transformer with 384 dimensions. When the score is greater than 0.35, the tool call is blocked.

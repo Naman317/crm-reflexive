@@ -1,0 +1,15 @@
+{
+  "model_name": "qwen2.5:3b",
+  "ollama_endpoint": "http://localhost:11434",
+  "temperature": 0.0,
+  "embedder": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedder_dimension": 384,
+  "router_threshold_tau": 0.35,
+  "backends": {
+    "vanilla": "ollama (greedy T=0.0)",
+    "mem0_rag": "ollama (top-k=3 vector retrieval)",
+    "crm_prompt": "ollama (recency-0 contrastive prompt injection)",
+    "crm_mask": "ollama_stop_interception (token suppression)"
+  },
+  "trials_evaluated": 1920
+}

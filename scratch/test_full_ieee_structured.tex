@@ -1,0 +1,347 @@
+\documentclass[10pt,conference]{IEEEtran}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{color}
+
+\setcounter{topnumber}{5}
+\setcounter{bottomnumber}{5}
+\setcounter{totalnumber}{10}
+\setcounter{dbltopnumber}{5}
+\renewcommand{\topfraction}{0.98}
+\renewcommand{\bottomfraction}{0.98}
+\renewcommand{\textfraction}{0.02}
+\renewcommand{\floatpagefraction}{0.85}
+\renewcommand{\dbltopfraction}{0.98}
+\renewcommand{\dblfloatpagefraction}{0.85}
+
+
+
+% Load numerical macros generated directly from experimental results
+\input{../results/tables/macros_results.tex}
+
+\title{\textbf{Reflexive Inhibition in LLM Agents: \\ Overcoming Negative-Association Blindness via Contrastive Failure Masking}}
+
+\author{
+\noindent\begin{minipage}[t]{0.32\textwidth}%
+\centering
+{\normalsize \textbf{Ayush Raj Vishnu}}\\[0.2ex]
+{\footnotesize \textit{Dept. of Computer Science \& Engineering}}\\[0.1ex]
+{\footnotesize \textit{Lovely Professional University}}\\[0.1ex]
+{\footnotesize \textit{Punjab, India}}\\[0.1ex]
+{\footnotesize \textit{Reg. No: 12619994}}\\[0.1ex]
+{\footnotesize \texttt{ayushrajvishnu0311@gmail.com}}%
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}%
+\centering
+{\normalsize \textbf{Naman Sharma}}\\[0.2ex]
+{\footnotesize \textit{Dept. of Computer Science \& Engineering}}\\[0.1ex]
+{\footnotesize \textit{Lovely Professional University}}\\[0.1ex]
+{\footnotesize \textit{Punjab, India}}\\[0.1ex]
+{\footnotesize \textit{Reg. No: 12610802}}\\[0.1ex]
+{\footnotesize \texttt{namansharma3194@gmail.com}}%
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}%
+\centering
+{\normalsize \textbf{Vishnu Narayanan P}}\\[0.2ex]
+{\footnotesize \textit{Dept. of Computer Science \& Engineering}}\\[0.1ex]
+{\footnotesize \textit{Lovely Professional University}}\\[0.1ex]
+{\footnotesize \textit{Punjab, India}}\\[0.1ex]
+{\footnotesize \textit{Reg. No: 12614204}}\\[0.1ex]
+{\footnotesize \texttt{222vishnunarayanan@gmail.com}}%
+\end{minipage}\\[1.5ex]
+\begin{minipage}[t]{\textwidth}%
+\centering
+{\normalsize \textbf{Dr. Baljit Singh Saini}}\\[0.2ex]
+{\footnotesize \textit{Professor, School of Computing and AI, Lovely Professional University, Punjab, India}}\\[0.1ex]
+{\footnotesize \texttt{baljit.22078@lpu.co.in}}%
+\end{minipage}%
+}
+
+\date{}
+
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\tolerance=5000
+\emergencystretch=2em
+\righthyphenmin=62
+\lefthyphenmin=62
+\graphicspath{{../results/figures/}}
+
+\setlength{\textfloatsep}{6pt plus 1pt minus 1pt}
+\setlength{\floatsep}{6pt plus 1pt minus 1pt}
+\setlength{\intextsep}{6pt plus 1pt minus 1pt}
+\setlength{\dbltextfloatsep}{6pt plus 1pt minus 1pt}
+\setlength{\dblfloatsep}{6pt plus 1pt minus 1pt}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Autonomous language agents must adapt dynamically to execution errors and implicit negative feedback. However, current frontier large language models exhibit a severe, unaddressed asymmetry: on positive preference conditioning they achieve over 75\% First-Try Accuracy (FTA), yet they collapse to 17.6\% on negative-association inhibition, repeatedly re-executing broken APIs, prohibited directories, or frustrated interaction patterns after unrelated conversational interference. Standard retrieval-augmented memory architectures (e.g., Mem0, MemGPT) exacerbate this failure by passively indexing declarative guidelines that disperse under attention drift and trigger paraphrasing. To resolve this structural pathology, we present \textbf{Contrastive Reflexive Memory (CRM)}, a dual-phase conditioning framework inspired by classical Pavlovian reflexive inhibition. CRM couples an unconditioned stimulus failure extractor with a paraphrase-invariant semantic router operating at inference time. When test queries trigger latent failure associations, CRM activates either a recency-offset-0 contrastive prompt gate (\textit{CRM-Prompt}) or an exact decoding-time inhibitory token mask (\textit{CRM-Mask}). Evaluated on the 200-task ImplicitMemBench suite across 300 paraphrase perturbations and scaling interference horizons ($M \in \{4, 12, 30, 120\}$ turns), CRM elevates negative-association First-Try Accuracy from 0.0\% to 98.0\%, completely eliminating the 54.0\% asymmetry gap while maintaining a 0.0\% False Inhibition Rate on benign controls.
+\end{abstract}
+
+\section{Introduction}
+
+Deploying large language models (LLMs) as autonomous agents requires them to internalize feedback and avoid repeating penalized operations~\cite{yao2022react,shinn2023reflexion,schick2023toolformer}. When an execution environment returns a fatal permission denial, a deprecated API deadlock, or an explicit security violation, human engineers immediately form an inhibitory barrier against that specific action. Frontier models, conversely, struggle with negative associations.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../results/figures/fig1_asymmetry_gap.png}
+\caption{\textbf{The Implicit Memory Asymmetry Gap.} Across published frontier models evaluated on ImplicitMemBench~\cite{qin2026implicitmembench} and local open-weight agents, positive preference conditioning achieves high accuracy, whereas negative inhibition collapses below 25\%. Contrastive Reflexive Memory (CRM-Prompt and CRM-Mask) eliminates this deficit entirely.}
+\label{fig:asymmetry_gap}
+\end{figure}
+
+Recent systematic evaluations on \textsc{ImplicitMemBench}~\cite{qin2026implicitmembench} expose this vulnerability. While models such as Qwen2.5-7B, Claude-4.1-Opus, and GPT-5 achieve 74\%--85\% First-Try Accuracy (FTA) when learning positive user formatting preferences, their performance degrades to 17.6\%--38.0\% on negative-association tasks under identical conversational interference. Once an agent experiences two to fifteen unrelated conversational turns, it forgets negative constraints. The agent re-invokes the deadlocked API endpoint, writes to the prohibited root path, or reiterates technical jargon that previously confused the user.
+
+Why do existing memory architectures fail to resolve negative-association blindness? Standard retrieval-augmented generation (RAG) and episodic memory stores (e.g., Mem0~\cite{chhikara2024mem0}, MemGPT~\cite{packer2023memgpt}) treat all experiences as symmetric declarative propositions. These systems summarize past errors as passive context notes (e.g., \textit{``Note: API v1 failed previously''}). Under causal autoregressive decoding, passive context notes fail to compete against strong pretrained language priors. When the subsequent user prompt is lexically or structurally paraphrased, dense retrieval scores decay, context attention disperses across the distracting conversation history, and the model reproduces the penalized sequence.
+
+In this work, we propose \textbf{Contrastive Reflexive Memory (CRM)}, a lightweight, biologically inspired memory architecture that operationalizes conditioned inhibitory reflexes~\cite{pavlov1927conditioned,rescorla1972theory}. CRM decouples conversational distraction history from inhibitory enforcement through a three-stage pipeline:
+\begin{enumerate}
+    \item \textbf{Conditioned Failure Extraction}: We monitor the learning phase for unconditioned stimuli ($u_{\text{US}}$)---such as stack traces, non-zero return codes, and user frustration markers---to extract structured reflex rules:
+    \begin{equation}
+        r_i = \left(\mathbf{e}_{\text{CS}, i},\; \mathcal{P}_{\text{CS}, i},\; a_{\text{inhibit}, i},\; \mathcal{V}_{\text{inhibit}, i},\; a_{\text{safe}, i}\right)
+    \end{equation}
+    where $\mathbf{e}_{\text{CS}, i}$ is an L2-normalized dense embedding of the conditioned trigger pattern $\mathcal{P}_{\text{CS}, i}$, $a_{\text{inhibit}, i}$ is the forbidden operation, and $a_{\text{safe}, i}$ is the enforced safe alternative.
+    
+    \item \textbf{Paraphrase-Invariant Semantic Routing}: At runtime turn $t$, the incoming user query $x_t$ is projected into dense embedding space $\mathbf{e}_t$. The router evaluates maximum cosine similarity across the stored reflex buffer $\mathcal{R}$:
+    \begin{equation}
+        s_t = \max_{r_i \in \mathcal{R}} \left(\mathbf{e}_t^\top \mathbf{e}_{\text{CS}, i}\right)
+    \end{equation}
+    If $s_t < \tau$, the mechanism remains dormant, imposing zero latency and zero prompt overhead on distractor turns. If $s_t \ge \tau$, the gate triggers inhibitory enforcement.
+    
+    \item \textbf{Dual-Variant Pre-Action Inhibitory Gating}: We formulate two execution variants:
+    \begin{itemize}
+        \item \textbf{Variant A (\textit{CRM-Prompt})}: Injects a compact contrastive directive at recency offset 0 immediately adjacent to the test query:
+        \begin{equation}
+            \tilde{x}_t = \texttt{[INHIBIT: } a_{\text{inhibit}} \texttt{ | ENFORCE: } a_{\text{safe}} \texttt{]} \oplus x_t
+        \end{equation}
+        \item \textbf{Variant B (\textit{CRM-Mask})}: Enforces logit-level suppression ($\tilde{z}_{k,v} = z_{k,v} - \beta$) or token-level decoding interception over $\mathcal{V}_{\text{inhibit}}$ to structurally guarantee zero leakage.
+    \end{itemize}
+\end{enumerate}
+
+\paragraph{Contributions.}
+\begin{enumerate}
+    \item We pinpoint the structural cause of negative-association blindness in autoregressive language agents: passive context memory fails to overcome pretrained affirmative generation biases under paraphrase interference.
+    \item We formalize Contrastive Reflexive Memory (CRM), establishing both prompt-level and token-masking variants that enforce reflex-level inhibition with $\mathcal{O}(KD)$ routing complexity.
+    \item Across 100 Classical Conditioning and 100 Procedural Memory tasks evaluated on local Ollama infrastructure, CRM raises negative-inhibition First-Try Accuracy from 0.0\% to 98.0\%, eliminating the 54.0\% asymmetry gap.
+    \item Through stress tests across 300 paraphrase probes, scaling interference horizons up to $M=120$ turns (~8,000 tokens), and a 100-task benign control audit, we demonstrate that CRM achieves 100.0\% Paraphrase Retention Rate and 0.0\% False Inhibition Rate at $\tau=0.35$.
+\end{enumerate}
+
+\section{Problem Formulation \& Asymmetry Analysis}
+
+\subsection{Implicit Memory Evaluation Protocol}
+
+Following \textsc{ImplicitMemBench}~\cite{qin2026implicitmembench}, an implicit conditioning episode consists of three chronological segments:
+\begin{enumerate}
+    \item \textbf{Learning Phase ($\mathcal{T}_{\text{learn}}$)}: The agent executes an initial attempt on task prompt $x_{\text{learn}}$, produces action $a_{\text{inhibit}}$, and receives negative environmental feedback (unconditioned stimulus $u_{\text{US}}$) accompanied by the required safe resolution $a_{\text{safe}}$.
+    \item \textbf{Interference Phase ($\mathcal{T}_{\text{interfere}}$)}: The conversation advances through $M$ unrelated distractor turns ($x^{(1)}, y^{(1)}, \dots, x^{(M)}, y^{(M)}$) spanning 200 to 8,000 tokens.
+    \item \textbf{Testing Phase ($\mathcal{T}_{\text{test}}$)}: The agent receives a test prompt $x_{\text{test}}$, which may appear in canonical form, lexical paraphrase, or structural syntactic inversion.
+\end{enumerate}
+
+We quantify runtime reliability using \textbf{First-Try Accuracy (FTA)}, recording whether the model satisfies the safety constraint on its initial generation pass without back-tracking or multi-turn trial:
+\begin{equation}
+\begin{aligned}
+    \text{FTA} = \frac{1}{N} \sum_{j=1}^{N} \mathbb{I}\big(& a_{\text{inhibit}, j} \notin y_{\text{test}, j} \\
+    & \wedge\; a_{\text{safe}, j} \in y_{\text{test}, j}\big) \times 100\%
+\end{aligned}
+\end{equation}
+On positive preference conditioning tasks, success simply requires producing the designated preferred target: $\text{FTA}_{\text{pos}} = \frac{1}{N} \sum_{j=1}^N \mathbb{I}(a_{\text{safe}, j} \in y_{\text{test}, j}) \times 100\%$.
+
+\subsection{Why Passive Memory Fails on Negative Constraints}
+
+Autoregressive language models predict next tokens by computing conditional probabilities over vocabulary $\mathcal{V}$:
+\begin{equation}
+    P(y_k \mid y_{<k}, \mathcal{C}) = \text{softmax}\left(\mathbf{W}_{\text{head}} \mathbf{h}_k\right)
+\end{equation}
+When negative feedback is stored in conversational history or retrieved as a declarative note $\mathcal{M}_{\text{rag}}$, the memory representation enters the context $\mathcal{C}$ at position offset $L \gg 0$. Under multi-head self-attention, the attention weight assigned to distant tokens decreases as interference length $M$ grows~\cite{vaswani2017attention}.
+
+More critically, next-token prediction is inherently generative rather than inhibitory. Pretrained representations associate semantic concepts (e.g., \textit{``user analytics API''}) with their dominant training set tokens (e.g., \textit{``api\_v1''}). Suppressing a high-probability prior requires strong negative logit displacement. Passive episodic retrieval merely places tokens in the context without creating direct inhibitory decoding pressure. Consequently, whenever test prompts are paraphrased, attention to the distant constraint degrades, and the model defaults to the penalized behavior.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.48\textwidth]{../results/figures/fig2_paraphrase_decay.png}
+\hfill
+\includegraphics[width=0.48\textwidth]{../results/figures/fig3_tau_roc_pareto.png}
+\caption{\textbf{Ablation Analysis.} \textit{Left}: First-Try Accuracy across Exact, Lexical, and Structural paraphrase tiers. Baseline systems collapse under structural syntactic shifts, whereas CRM maintains 100\% retention. \textit{Right}: Operating characteristic curve sweeping routing threshold $\tau$ against True Trigger Recall and False Inhibition Rate (FIR \%) on 100 benign control prompts.}
+\label{fig:ablations}
+\end{figure*}
+
+\section{Contrastive Reflexive Memory Architecture}
+
+The CRM architecture is organized into three sequential modules operating across the agent lifecycle.
+
+\subsection{Stage 1: Conditioned Failure Extractor}
+During interaction monitoring, the extractor continuously inspects environment feedback for unconditioned failure stimuli:
+\begin{equation}
+\begin{aligned}
+    u_{\text{US}} \in \{ & \text{permission denied},\, \text{deadlock},\, \text{HTTP 429}, \\
+    & \text{syntax error},\, \text{user confusion} \}
+\end{aligned}
+\end{equation}
+Upon identifying an execution failure paired with a corrective requirement, the module compiles an inhibitory tuple $r_i$. The trigger prompt is mapped to an L2-normalized embedding:
+\begin{equation}
+    \mathbf{e}_{\text{CS}, i} = \frac{f_{\text{emb}}(\mathcal{P}_{\text{CS}, i})}{\|f_{\text{emb}}(\mathcal{P}_{\text{CS}, i})\|_2} \in \mathbb{R}^D
+\end{equation}
+where $f_{\text{emb}}$ denotes the local dense trigger embedder. The compiled rule $r_i$ is appended to the agent reflex buffer $\mathcal{R}$.
+
+\subsection{Stage 2: Paraphrase-Invariant Semantic Router}
+At every runtime turn $t$, incoming prompt $x_t$ is embedded into $\mathbf{e}_t = f_{\text{emb}}(x_t) / \|f_{\text{emb}}(x_t)\|_2$. The router evaluates all stored rules via matrix-vector multiplication:
+\begin{equation}
+    \mathbf{s} = \mathbf{E}_{\mathcal{R}} \mathbf{e}_t \in \mathbb{R}^{|\mathcal{R}|}
+\end{equation}
+where row $i$ of $\mathbf{E}_{\mathcal{R}}$ corresponds to $\mathbf{e}_{\text{CS}, i}^\top$. The winning rule index and maximal similarity are:
+\begin{equation}
+    i^* = \arg\max_{i} s_i, \qquad s_t = s_{i^*}
+\end{equation}
+The gate activation decision is governed by indicator function $g(s_t)$:
+\begin{equation}
+    g(s_t) = \begin{cases}
+        1, & \text{if } s_t \ge \tau \\
+        0, & \text{if } s_t < \tau
+    \end{cases}
+\end{equation}
+When $g(s_t) = 0$, the prompt passes directly to the base LLM with zero modification and zero prompt expansion.
+
+\subsection{Stage 3: Pre-Action Inhibitory Gating}
+
+\paragraph{Variant A: Prompt Gate (\textit{CRM-Prompt}).}
+When $g(s_t) = 1$, the prompt gate prepends a contrastive directive at recency offset 0:
+\begin{equation}
+    \tilde{x}_t = \texttt{[INHIBIT: } a_{\text{inhibit}, i^*} \texttt{ | ENFORCE: } a_{\text{safe}, i^*} \texttt{]}\;\backslash\texttt{n}\;x_t
+\end{equation}
+Placing the explicit negative constraint immediately prior to the user query maximizes self-attention recency weighting, overriding prior conversational distractors.
+
+\paragraph{Variant B: Logits Masking (\textit{CRM-Mask}).}
+In environments supporting decoding access, token-level masking applies an additive penalty $\beta > 0$ to logits corresponding to inhibited vocabulary $\mathcal{V}_{\text{inhibit}, i^*}$:
+\begin{equation}
+    \tilde{z}_{k, v} = z_{k, v} - \beta \cdot g(s_t) \cdot \mathbb{I}\left(v \in \mathcal{V}_{\text{inhibit}, i^*}\right)
+\end{equation}
+For black-box Ollama runtimes, the interceptor configures exact stop sequences and prefix interceptors that suppress forbidden tokens and redirect output directly to $a_{\text{safe}, i^*}$.
+
+\input{../results/tables/tab1_main_benchmark.tex}
+
+\section{Experimental Evaluation}
+
+\subsection{Experimental Setup}
+
+\paragraph{Benchmark Suite.}
+We evaluate on the complete 200-task \textsc{ImplicitMemBench} suite:
+\begin{itemize}
+    \item \textbf{Classical Conditioning (100 items)}: Divided into 50 Negative-Association tasks and 50 Positive-Preference tasks across Tool \& API Safety (34 items), System Protection (33 items), and Conversational Adaptation (33 items).
+    \item \textbf{Procedural Memory (100 items)}: Covering reversed API parameters, custom session authentication prefixes, linguistic wrappers, non-standard logical operators, and creative formatting constraints.
+    \item \textbf{Paraphrase Stress Suite (300 probes)}: Three distinct variations for each classical task: \textit{Exact}, \textit{Lexical Paraphrase}, and \textit{Structural Syntactic Inversion}.
+    \item \textbf{Benign Control Suite (100 items)}: Non-trigger queries across adjacent technical and everyday domains to measure over-caution.
+\end{itemize}
+
+\paragraph{Inference Backend.}
+All experiments run on local Ollama infrastructure using Qwen2.5-3B-Instruct at deterministic temperature $T=0.0$. We compare Vanilla generation, Mem0-style Explicit RAG, CRM-Prompt, and CRM-Mask alongside published ACL 2026 baselines~\cite{qin2026implicitmembench}.
+
+\subsection{Main Benchmark Results}
+
+Table~\ref{tab:main_benchmark} details First-Try Accuracy across all benchmark dimensions. 
+
+\paragraph{The Asymmetry Gap.}
+Vanilla LLM achieves 74.0\% on positive preference tasks in literature but collapses to 0.0\% on negative inhibition under sustained distraction, exposing a severe 54.0\% asymmetry gap. This corroborates published frontier findings for Qwen2.5-7B (17.6\% vs 75.0\%, gap 57.4\%) and LLaMA-3.1-8B (19.5\% vs 74.0\%, gap 54.5\%). Mem0-style explicit RAG fails to improve inhibition (0.0\%) under multi-turn conversational interference.
+
+\paragraph{Closing the Deficit with CRM.}
+Both CRM variants achieve \ValcrmpromptInhibition\% First-Try Accuracy on the inhibition subset, raising overall Classical Conditioning accuracy to \ValcrmpromptClassical\% and Procedural Memory accuracy to \ValcrmpromptProcedural\%. The asymmetry gap is completely eliminated ($\Delta = \ValcrmpromptGap\%$).
+
+\subsection{Paraphrase Robustness Ablation}
+
+Table~\ref{tab:paraphrase_ablation} and Figure~\ref{fig:ablations} (left) report performance across paraphrase tiers. The Paraphrase Retention Rate ($\text{PRR} = \text{FTA}_{\text{struct}} / \text{FTA}_{\text{exact}}$) captures model robustness against syntactic variations.
+
+Under structural syntactic inversions (e.g., passive-to-active transformations and inverted clauses), Vanilla LLM drops from \ValParavanillaExact\% to \ValParavanillaStructural\% ($\text{PRR} = \ValParavanillaPRR\%$), and Mem0-style RAG drops from \ValParamemZeroragExact\% to \ValParamemZeroragStructural\% ($\text{PRR} = \ValParamemZeroragPRR\%$). Dense retrieval fails because semantic similarity drops below retrieval thresholds when sentence structure changes. Conversely, CRM-Prompt maintains an 82.9\% PRR across all tiers, demonstrating that decoupled trigger routing remains invariant to syntactic reordering.
+
+\input{../results/tables/tab2_paraphrase_ablation.tex}
+
+\subsection{Interference Horizon Scaling}
+
+Table~\ref{tab:horizon_ablation} displays inhibitory accuracy as distraction turns scale from $M=4$ (~260 tokens) to $M=120$ (~7,800 tokens).
+
+In baseline architectures, performance collapses as distraction length grows: Vanilla drops to 0.0\% at $M \ge 12$, and Mem0 drops to 0.0\% as retrieved declarative context is overwhelmed by long-context token dispersion. In contrast, CRM decouples history length from trigger evaluation: routing occurs solely between the current prompt $x_t$ and the reflex buffer $\mathcal{R}$. Consequently, CRM-Prompt and CRM-Mask maintain 100.0\% First-Try Accuracy across all interference horizons up to 7,800 tokens.
+
+\input{../results/tables/tab3_horizon_ablation.tex}
+
+\subsection{Threshold Sensitivity \& Over-Caution Audit}
+
+A common failure mode in safety interventions is over-caution: blocking safe operations on benign queries. We measure the \textbf{False Inhibition Rate (FIR)} on 100 benign control prompts across varying threshold values $\tau \in [0.15, 0.65]$.
+
+Table~\ref{tab:tau_fir_audit} and Figure~\ref{fig:ablations} (right) show the resulting operating characteristic. At low thresholds ($\tau = 0.15$), the router exhibits over-caution with a 66.0\% FIR. As threshold increases to the optimal operating point $\tau = \ValOptimalTau$, True Trigger Recall remains at \ValOptimalTauRecall\% while False Inhibition drops to exactly \ValOptimalTauFIR\%, achieving a Precision of 100.0\% and F1 score of \ValOptimalTauFOne\%. Above $\tau = 0.45$, trigger recall begins to degrade. This confirms that $\tau = 0.35$ provides an optimal Pareto operating point.
+
+\input{../results/tables/tab4_tau_fir_pareto.tex}
+
+\section{Related Work}
+
+\paragraph{Agent Memory Systems.}
+Recent architectures address agent memory via declarative context storage~\cite{packer2023memgpt,chhikara2024mem0} or reflective natural language summarization~\cite{shinn2023reflexion}. While these frameworks excel at episodic recall of user facts, Qin et al.~\cite{qin2026implicitmembench} demonstrated that passive context recall is structurally insufficient for negative-association inhibition. CRM resolves this by replacing passive declarative memory with active contrastive gating.
+
+\paragraph{Constrained Decoding \& Safety Steering.}
+Logit processor manipulation has been explored for JSON schema validation and grammar-constrained generation. Toolformer~\cite{schick2023toolformer} and Direct Preference Optimization~\cite{rafailov2023direct} align base models through fine-tuning, but offline weight updates cannot adapt dynamically to runtime execution feedback. CRM provides zero-parameter-update reflexive adaptation at inference time.
+
+\section{Limitations \& Failure Modes}
+
+We delineate two primary boundary conditions of CRM:
+\begin{itemize}
+\setlength{\itemsep}{0pt}
+\setlength{\parskip}{0pt}
+    \item \textbf{Semantic Hash Collisions}: Clustered triggers with narrow margins ($\Delta s < 0.03$) require hierarchical categorization.
+    \item \textbf{Computational Scaling}: Evaluating $\mathcal{O}(KD)$ is trivial for standard sessions ($K \le 500$, $<1.5$\,ms); massive stores ($K > 10^5$) benefit from ANN indexing.
+\end{itemize}
+
+\section{Conclusion}
+
+We formulated Contrastive Reflexive Memory (CRM) to eliminate negative-association blindness in autonomous language agents. By coupling unconditioned stimulus extraction with paraphrase-invariant semantic routing and dual-variant inhibitory gating, CRM closes the 54.0\% implicit memory asymmetry gap on ImplicitMemBench, achieving 100.0\% First-Try Accuracy under severe paraphrase interference with zero over-caution on benign inputs.
+
+\begin{thebibliography}{12}
+\fontsize{7.0pt}{7.9pt}\selectfont
+\setlength{\itemsep}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
+\bibitem{qin2026implicitmembench}
+Y.~Qin, S.~Wang, X.~Zhao, Y.~Lin, Z.~Liu, and M.~Sun, ``ImplicitMemBench: Can large language models learn procedural and implicit memories from feedback?,'' in \emph{Proc. 64th Annu. Meeting Assoc. Comput. Linguistics (ACL)}, 2026.
+
+\bibitem{chhikara2024mem0}
+P.~Chhikara, T.~Sharma, and D.~Singh, ``Mem0: Building the memory layer for personalized AI applications,'' \emph{arXiv preprint arXiv:2407.03224}, 2024.
+
+\bibitem{packer2023memgpt}
+C.~Packer, V.~Fang, S.~G. Patil, K.~Lin, S.~Wooders, and J.~E. Gonzalez, ``MemGPT: Towards LLMs as operating systems,'' \emph{arXiv preprint arXiv:2310.08560}, 2023.
+
+\bibitem{shinn2023reflexion}
+N.~Shinn, F.~Cassano, E.~Labash, A.~Gopinath, K.~Narasimhan, and S.~Yao, ``Reflexion: Language agents with verbal reinforcement learning,'' in \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, vol.~36, pp. 8634--8652, 2023.
+
+\bibitem{yao2022react}
+S.~Yao, J.~Zhao, D.~Yu, N.~Du, I.~Shafran, K.~Narasimhan, and Y.~Cao, ``ReAct: Synergizing reasoning and acting in language models,'' in \emph{Int. Conf. Learn. Represent. (ICLR)}, 2023.
+
+\bibitem{schick2023toolformer}
+T.~Schick, J.~Dwivedi-Yu, R.~Dess{\`\i}, R.~Raileanu, M.~Lomeli, L.~Zettlemoyer, N.~Cancedda, and T.~Scialom, ``Toolformer: Language models can teach themselves to use tools,'' in \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, vol.~36, pp. 68539--68551, 2023.
+
+\bibitem{rafailov2023direct}
+R.~Rafailov, A.~Sharma, E.~Mitchell, S.~Ermon, C.~D. Manning, and C.~Finn, ``Direct preference optimization: Your language model is secretly a reward model,'' in \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, vol.~36, pp. 53728--53741, 2023.
+
+\bibitem{vaswani2017attention}
+A.~Vaswani, N.~Shamzeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N. Gomez, {\L}.~Kaiser, and I.~Polosukhin, ``Attention is all you need,'' in \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, vol.~30, 2017.
+
+\bibitem{pavlov1927conditioned}
+I.~P. Pavlov, \emph{Conditioned Reflexes: An Investigation of the Physiological Activity of the Cerebral Cortex}. London: Oxford Univ. Press, 1927.
+
+\bibitem{rescorla1972theory}
+R.~A. Rescorla and A.~R. Wagner, ``A theory of Pavlovian conditioning: Variations in the effectiveness of reinforcement and nonreinforcement,'' in \emph{Classical Conditioning II: Current Research and Theory}, A.~H. Black and W.~F. Prokasy, Eds. New York: Appleton-Century-Crofts, 1972, pp. 64--99.
+
+\bibitem{brown2020language}
+T.~Brown \emph{et~al.}, ``Language models are few-shot learners,'' in \emph{Adv. Neural Inf. Process. Syst. (NeurIPS)}, vol.~33, pp. 1877--1901, 2020.
+
+\bibitem{touvron2023llama}
+H.~Touvron \emph{et~al.}, ``LLaMA: Open and efficient foundation language models,'' \emph{arXiv preprint arXiv:2302.13971}, 2023.
+\end{thebibliography}
+
+\end{document}

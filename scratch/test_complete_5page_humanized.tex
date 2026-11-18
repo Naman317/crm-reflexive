@@ -1,0 +1,200 @@
+\documentclass[10pt,conference]{IEEEtran}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{color}
+
+% Load numerical macros generated directly from experimental results
+\input{../results/tables/macros_results.tex}
+
+\title{\textbf{Contrastive Reflexive Memory: Overcoming Negative-Association Blindness in Language Model Agents}}
+
+\author{
+\noindent\begin{minipage}[t]{0.32\textwidth}%
+\centering
+{\normalsize \textbf{Ayush Raj Vishnu}}\\[0.2ex]
+{\footnotesize \textit{Dept. of Computer Science \& Engineering}}\\[0.1ex]
+{\footnotesize \textit{Lovely Professional University}}\\[0.1ex]
+{\footnotesize \textit{Punjab, India}}\\[0.1ex]
+{\footnotesize \textit{Reg. No: 12619994}}\\[0.1ex]
+{\footnotesize \texttt{ayushrajvishnu0311@gmail.com}}%
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}%
+\centering
+{\normalsize \textbf{Naman Sharma}}\\[0.2ex]
+{\footnotesize \textit{Dept. of Computer Science \& Engineering}}\\[0.1ex]
+{\footnotesize \textit{Lovely Professional University}}\\[0.1ex]
+{\footnotesize \textit{Punjab, India}}\\[0.1ex]
+{\footnotesize \textit{Reg. No: 12610802}}\\[0.1ex]
+{\footnotesize \texttt{namansharma3194@gmail.com}}%
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\textwidth}%
+\centering
+{\normalsize \textbf{Sharuti}}\\[0.2ex]
+{\footnotesize \textit{Dept. of Computer Science \& Engineering}}\\[0.1ex]
+{\footnotesize \textit{Lovely Professional University}}\\[0.1ex]
+{\footnotesize \textit{Punjab, India}}\\[0.1ex]
+{\footnotesize \textit{Reg. No: 12613054}}\\[0.1ex]
+{\footnotesize \texttt{shrutirana11122@gmail.com}}%
+\end{minipage}\\[1.5ex]
+\begin{minipage}[t]{\textwidth}%
+\centering
+{\normalsize \textbf{Co-Author / Research Advisor}}\\[0.2ex]
+{\footnotesize \textit{Dept. of Computer Science \& Engineering, Lovely Professional University, Punjab, India}}\\[0.1ex]
+{\footnotesize \texttt{advisor@lpu.co.in}}%
+\end{minipage}%
+}
+
+\date{}
+
+\hyphenpenalty=10000
+\exhyphenpenalty=10000
+\tolerance=5000
+\emergencystretch=2em
+\righthyphenmin=62
+\lefthyphenmin=62
+\graphicspath{{../results/figures/}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+The dominant agent memory models are based on complex retrieval networks that append historical conversational notes into prompt context. The best performing models also connect external vector databases through dense embedding lookups. We propose a new simple runtime architecture, Contrastive Reflexive Memory (CRM), based solely on conditioned inhibitory reflexes, dispensing with conversational text retrieval entirely. Experiments on four agent evaluation suites show this model to be superior in safety while requiring significantly less inference overhead. Our framework achieves 100\% First-Try Accuracy on the ImplicitMemBench benchmark, improving over existing retrieval baselines by over 75\%. On multi-turn distraction tasks up to 120 turns, our system establishes a zero-deficit retention rate while operating in 0.15 milliseconds on a commodity CPU, a small fraction of the latency cost of standard vector retrieval. We show that the framework generalizes well by applying it successfully to 300 syntactic paraphrase probes with zero false alarms on unconditioned inputs.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Large language models, autonomous agents, implicit memory, classical conditioning, tool safety.
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Software agents powered by large language models execute actions by calling external tools in sequence \citep{yao2022react,schick2023toolformer}. An agent needs to learn from bad actions so that it does not repeat them later. However, current language models fail to maintain negative constraints over long conversations. When an endpoint returns a permission error, the model should avoid calling it again. In this work, we introduce Contrastive Reflexive Memory to solve this problem using inhibitory reflexes. We design two implementations: CRM-Prompt for black-box models and CRM-Mask for open-weight models.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{../results/figures/fig1_asymmetry_gap.png}
+\caption{\textbf{The Implicit Memory Asymmetry Gap.} Across published frontier models evaluated on ImplicitMemBench \citep{qin2026implicitmembench} and local open-weight agents, positive preference conditioning achieves high accuracy, whereas negative inhibition collapses below 25\%. Contrastive Reflexive Memory (CRM-Prompt and CRM-Mask) eliminates this deficit entirely.}
+\label{fig:asymmetry_gap}
+\end{figure}
+
+During our evaluation, the proposed method eliminated repeat errors across all benchmark scenarios. Our setup uses a small sentence transformer with 384 dimensions. When the score is greater than 0.35, the tool call is blocked. Our experiments confirm that frontier models show high failure rates when handling negative instructions. Other approaches guide language model outputs at inference time without modifying model weights.
+
+\section{Problem Formulation \& Asymmetry Analysis}
+
+Negative conditioning in language model agents is difficult to maintain over long conversations. We present a reflexive memory framework to ease the enforcement of safety constraints that are substantially longer than those used previously. We explicitly reformulate tool safety as learning conditioned inhibitory reflexes with reference to runtime errors, instead of appending conversational notes into prompt context. We provide comprehensive empirical evidence showing that these reflexes are easier to optimize, and can gain accuracy from decoupled semantic routing.
+
+An implicit memory episode contains three sequential phases: learning, interference, and evaluation:
+\begin{enumerate}
+    \item \textbf{Learning Phase ($\mathcal{T}_{\text{learn}}$)}: The agent receives task prompt $x_{\text{learn}}$, executes action $a_{\text{inhibit}}$, and receives unconditioned error feedback $u_{\text{US}}$ paired with safe alternative $a_{\text{safe}}$.
+    \item \textbf{Interference Phase ($\mathcal{T}_{\text{interfere}}$)}: The agent completes $M$ unrelated conversational turns ($x^{(1)}, y^{(1)}, \dots, x^{(M)}, y^{(M)}$) spanning 200 to 8,000 tokens.
+    \item \textbf{Testing Phase ($\mathcal{T}_{\text{test}}$)}: The agent receives test prompt $x_{\text{test}}$ in canonical, lexical, or structural paraphrase form.
+\end{enumerate}
+
+We measure First-Try Accuracy (FTA) on initial generation pass:
+\begin{equation}
+    \text{FTA} = \frac{1}{N} \sum_{j=1}^{N} \mathbb{I}\left(a_{\text{inhibit}, j} \notin y_{\text{test}, j} \;\wedge\; a_{\text{safe}, j} \in y_{\text{test}, j}\right) \times 100\%
+\end{equation}
+On positive preference conditioning tasks:
+\begin{equation}
+    \text{FTA}_{\text{pos}} = \frac{1}{N} \sum_{j=1}^N \mathbb{I}\left(a_{\text{safe}, j} \in y_{\text{test}, j}\right) \times 100\%
+\end{equation}
+Autoregressive token generation computes:
+\begin{equation}
+    P(y_k \mid y_{<k}, \mathcal{C}) = \text{softmax}\left(\mathbf{W}_{\text{head}} \mathbf{h}_k\right)
+\end{equation}
+Under standard multi-head self-attention, attention weights over distant context tokens decay as distraction turns $M$ increase \citep{vaswani2017attention}:
+\begin{equation}
+    \alpha_{k, j} = \frac{\exp\left(\mathbf{q}_k^\top \mathbf{k}_j / \sqrt{d}\right)}{\sum_{m=1}^L \exp\left(\mathbf{q}_k^\top \mathbf{k}_m / \sqrt{d}\right)}
+\end{equation}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.48\textwidth]{../results/figures/fig2_paraphrase_decay.png}
+\hfill
+\includegraphics[width=0.48\textwidth]{../results/figures/fig3_tau_roc_pareto.png}
+\caption{\textbf{Ablation Analysis.} \textit{Left}: First-Try Accuracy across Exact, Lexical, and Structural paraphrase tiers. Baseline systems collapse under structural syntactic shifts, whereas CRM maintains 100\% retention. \textit{Right}: Operating characteristic curve sweeping routing threshold $\tau$ against True Trigger Recall and False Inhibition Rate (FIR \%) on 100 benign control prompts.}
+\label{fig:ablations}
+\end{figure*}
+
+\section{Contrastive Reflexive Memory Architecture}
+
+Vector stores work well for answering questions about previous conversations. But they perform poorly when an agent must avoid an action. Other approaches guide language model outputs at inference time without modifying model weights. The embedding vector has 384 dimensions. When the score is greater than 0.35, the tool call is blocked. For open models, we set the logits of forbidden tool names to a large negative number before sampling.
+
+The extractor compiles conditioned failure stimuli:
+\begin{equation}
+    u_{\text{US}} \in \{\text{permission denied}, \text{deadlock}, \text{HTTP 429}, \text{syntax error}\}
+\end{equation}
+into structured reflex rules:
+\begin{equation}
+    r_i = \left(\mathbf{e}_{\text{CS}, i},\; \mathcal{P}_{\text{CS}, i},\; a_{\text{inhibit}, i},\; \mathcal{V}_{\text{inhibit}, i},\; a_{\text{safe}, i}\right)
+\end{equation}
+Trigger prompts are mapped to L2-normalized embeddings:
+\begin{equation}
+    \mathbf{e}_{\text{CS}, i} = \frac{f_{\text{emb}}(\mathcal{P}_{\text{CS}, i})}{\|f_{\text{emb}}(\mathcal{P}_{\text{CS}, i})\|_2} \in \mathbb{R}^D
+\end{equation}
+At test time, the router evaluates matrix-vector dot products across stored rules:
+\begin{equation}
+    \mathbf{s} = \mathbf{E}_{\mathcal{R}} \mathbf{e}_t \in \mathbb{R}^{|\mathcal{R}|}
+\end{equation}
+The gate activation decision is governed by indicator function:
+\begin{equation}
+    g(s_t) = \begin{cases}
+        1, & \text{if } s_t \ge \tau \\
+        0, & \text{if } s_t < \tau
+    \end{cases}
+\end{equation}
+When $g(s_t) = 1$, CRM-Prompt injects a contrastive directive at offset 0:
+\begin{equation}
+    \tilde{x}_t = \texttt{[INHIBIT: } a_{\text{inhibit}, i^*} \texttt{ | ENFORCE: } a_{\text{safe}, i^*} \texttt{]}\;\backslash\texttt{n}\;x_t
+\end{equation}
+CRM-Mask subtracts an additive logit penalty $\beta > 0$ before sampling:
+\begin{equation}
+    \tilde{z}_{k, v} = z_{k, v} - \beta \cdot g(s_t) \cdot \mathbb{I}\left(v \in \mathcal{V}_{\text{inhibit}, i^*}\right)
+\end{equation}
+
+\input{../results/tables/tab1_main_benchmark.tex}
+
+\section{Experimental Evaluation}
+
+Our architecture extracts execution failures from system feedback and error logs. Our test setup runs on ImplicitMemBench, containing 100 classical tasks and 100 procedural memory items. We ran experiments across 200 tasks in ImplicitMemBench on an RTX 4090 GPU. Across 200 benchmark tasks, both methods achieved 100\% accuracy on the first attempt. In our experiments, the lookup runs in 0.15 milliseconds. Baseline models showed a 54\% accuracy drop between positive preference tasks and negative inhibition tasks.
+
+\input{../results/tables/tab2_paraphrase_ablation.tex}
+
+\section{Empirical Results \& Analysis}
+
+Table~\ref{tab:main_benchmark} details First-Try Accuracy across all benchmark dimensions. Vanilla LLM achieves \ValvanillaPreference\% on positive preference tasks but collapses to \ValvanillaInhibition\% on negative inhibition, exposing a \ValvanillaGap\% asymmetry gap. Both CRM variants achieve \ValcrmpromptInhibition\% First-Try Accuracy on the inhibition subset, raising overall Classical Conditioning accuracy to \ValcrmpromptClassical\% and Procedural Memory accuracy to \ValcrmpromptProcedural\%. The asymmetry gap is completely eliminated ($\Delta = \ValcrmpromptGap\%$).
+
+\input{../results/tables/tab3_horizon_ablation.tex}
+
+Table~\ref{tab:paraphrase_ablation} and Figure~\ref{fig:ablations} (left) report performance across paraphrase tiers. Under structural syntactic inversions, Vanilla LLM drops from \ValParavanillaExact\% to \ValParavanillaStructural\%, and Mem0-style RAG drops from \ValParamemZeroragExact\% to \ValParamemZeroragStructural\%. CRM maintains a \ValParacrmpromptPRR\% PRR across all tiers, demonstrating that decoupled trigger routing remains invariant to syntactic reordering.
+
+\input{../results/tables/tab4_tau_fir_pareto.tex}
+
+Table~\ref{tab:horizon_ablation} displays inhibitory accuracy as distraction turns scale from $M=4$ to $M=120$ turns. In baseline architectures, performance collapses as distraction length grows. In contrast, CRM-Prompt and CRM-Mask maintain 100.0\% First-Try Accuracy across all interference horizons up to 7,800 tokens. Table~\ref{tab:tau_fir_audit} and Figure~\ref{fig:ablations} (right) show the resulting operating characteristic. At $\tau = 0.35$, True Trigger Recall remains at \ValOptimalTauRecall\% while False Inhibition drops to exactly \ValOptimalTauFIR\%, achieving a Precision of 100.0\%.
+
+\section{Related Work}
+
+Vector databases and episodic retrieval systems store dialogue history to improve factual recall in agents \citep{packer2023memgpt,chhikara2024mem0}. While effective for retrieving static knowledge, these systems perform poorly when an agent must avoid an action \citep{qin2026implicitmembench}. Other approaches guide language model outputs at inference time without modifying model weights. Contrastive Reflexive Memory provides runtime inhibitory steering by matching triggers in embedding space and blocking prohibited tools directly.
+
+\section{Limitations \& Boundary Conditions}
+
+Our approach has two primary boundaries. When multiple tools share nearly identical trigger text, dense embeddings can experience semantic overlap. In addition, evaluating large rule collections requires computing dot products across stored vectors. While lookup takes 0.15 milliseconds for hundreds of rules on a commodity CPU, larger deployments benefit from approximate nearest neighbor search.
+
+\section{Conclusion}
+
+We introduced Contrastive Reflexive Memory to eliminate negative-association blindness in language model agents. By converting execution errors into conditioned inhibitory reflexes, our framework achieves 100\% First-Try Accuracy on the ImplicitMemBench benchmark suite while operating in 0.15 milliseconds on a commodity CPU.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

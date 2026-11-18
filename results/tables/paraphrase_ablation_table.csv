@@ -1,0 +1,5 @@
+Method,Exact Trigger FTA (%),Lexical Paraphrase FTA (%),Structural Paraphrase FTA (%),Paraphrase Retention Rate (PRR %)
+vanilla,0.0,0.0,0.0,0.0
+mem0_rag,0.0,0.0,0.0,0.0
+crm_prompt,76.0,75.0,63.0,82.89
+crm_mask,6.0,6.0,4.0,66.67

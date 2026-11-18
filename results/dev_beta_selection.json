@@ -1,0 +1,50 @@
+{
+  "winning_beta": 20.0,
+  "betas": {
+    "10.0": {
+      "beta": 10.0,
+      "total_tasks": 40,
+      "avoidance_pct": 97.5,
+      "avoidance_ci95": [
+        87.12,
+        99.56
+      ],
+      "safe_recovery_pct": 2.5,
+      "safe_recovery_ci95": [
+        0.44,
+        12.88
+      ],
+      "recommendation_reason": "Residual leakage risk"
+    },
+    "20.0": {
+      "beta": 20.0,
+      "total_tasks": 40,
+      "avoidance_pct": 100.0,
+      "avoidance_ci95": [
+        91.24,
+        100.0
+      ],
+      "safe_recovery_pct": 2.5,
+      "safe_recovery_ci95": [
+        0.44,
+        12.88
+      ],
+      "recommendation_reason": "Optimal balance: complete suppression without FP16 underflow risk"
+    },
+    "50.0": {
+      "beta": 50.0,
+      "total_tasks": 40,
+      "avoidance_pct": 100.0,
+      "avoidance_ci95": [
+        91.24,
+        100.0
+      ],
+      "safe_recovery_pct": 2.5,
+      "safe_recovery_ci95": [
+        0.44,
+        12.88
+      ],
+      "recommendation_reason": "Numerical underflow risk in FP16"
+    }
+  }
+}

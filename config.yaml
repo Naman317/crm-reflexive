@@ -1,0 +1,31 @@
+model:
+  name: "qwen2.5:3b"
+  ollama_endpoint: "http://localhost:11434"
+  temperature: 0.0
+  num_predict: 128
+  num_ctx: 10240
+  timeout_seconds: 600.0
+  seeds: [42, 123, 999]
+
+embedder:
+  model_name: "sentence-transformers/all-MiniLM-L6-v2"
+  dimension: 384
+  device: "cpu"
+  normalize: true
+
+parameters:
+  tau_default: 0.35
+  tau_list: [0.15, 0.20, 0.25, 0.30, 0.35, 0.45, 0.55, 0.65]
+  horizons: [4, 12, 30, 120]
+  mask_beta: 20.0
+  rag_top_k: 3
+  winning_prompt_candidate: "Candidate_1_Direct_Natural"
+  directive_template_inhibit: "Do not use {a_inhibit}. Use {a_safe} instead.\n"
+  directive_template_pref: "Use {a_safe}.\n"
+
+paths:
+  data_dir: "data"
+  results_dir: "results"
+  raw_logs_dir: "results/raw_logs"
+  figures_dir: "results/figures"
+  tables_dir: "results/tables"

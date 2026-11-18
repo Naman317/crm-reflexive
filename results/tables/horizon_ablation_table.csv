@@ -1,0 +1,5 @@
+Method,M=4 turns (~260 tok),M=12 turns (~780 tok),M=30 turns (~1950 tok),M=120 turns (~7800 tok)
+vanilla,0.0,0.0,0.0,0.0
+mem0_rag,0.0,0.0,0.0,0.0
+crm_prompt,98.0,98.0,98.0,98.0
+crm_mask,2.0,2.0,2.0,2.0

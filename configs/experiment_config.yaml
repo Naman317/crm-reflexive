@@ -1,0 +1,37 @@
+# Experiment Configuration for Contrastive Reflexive Memory (CRM)
+# Hardware Target: Lenovo IdeaPad / Local Ollama (http://localhost:11434)
+
+environment:
+  ollama_host: "http://localhost:11434"
+  preferred_models:
+    - "qwen2.5:3b"
+    - "qwen2.5:7b"
+    - "llama3.2:3b"
+    - "phi:latest"
+  embedder_model: "nomic-embed-text"
+  seed: 42
+  temperature: 0.0
+
+crm_parameters:
+  default_tau: 0.35
+  tau_sweep: [0.15, 0.20, 0.25, 0.30, 0.35, 0.45, 0.55, 0.65]
+  beta_mask_penalty: 50.0
+  embedding_dimension: 768
+  similarity_metric: "cosine"
+
+evaluation:
+  interference_horizons: [4, 12, 30, 120] # tokens: ~200, ~500, ~2000, ~8000
+  first_try_accuracy: true
+  max_retries: 0
+  num_classical_items: 100
+  num_procedural_items: 100
+  num_paraphrase_items: 300
+  num_control_items: 100
+
+paths:
+  data_dir: "data"
+  results_dir: "results"
+  raw_logs_dir: "results/raw_logs"
+  tables_dir: "results/tables"
+  figures_dir: "results/figures"
+  paper_dir: "paper"

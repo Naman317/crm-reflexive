@@ -1,0 +1,266 @@
+Reflexive Inhibition in LLM Agents:
+
+A Semantic Routing Approach to
+
+Negative-Association Memory
+
+Co-Author
+
+Dr Baljit Singh Saini
+
+Professor, School of Computing and AI
+
+Lovely Professional University, Punjab, India
+
+baljit.22078@lpu.co.in
+
+Abstract—We introduce a new benchmark of 160 tool-use tasks on 500 API functions from GitHub. To create this benchmark, software developers were asked to read an API specification and then compose tasks based on the constraints of the interface. During baseline tests, 19.4% of failed tool calls were repeated immediately. Our proposed system, Contrastive Reflexive Memory, records past failures in an SQLite table using 384-dimensional dense vectors. Incoming tool calls are matched against cached records in SQLite. The router checks incoming calls against the database table. We set the decision threshold tau to 0.35. In 480 test trials with Qwen2.5-3B, the failure rate decreased from 19.4% to 1.9%. Measured execution overhead was 17 milliseconds per call.
+
+I. INTRODUCTION
+
+Software agents built on language models act by dispatching external tool calls in sequential turns. When an execution step triggers an error, such as an invalid parameter or a permission exception, the agent must modify its trajectory during subsequent cycles. Under standard conversational architectures, models frequently reissue the exact same invalid invocation on subsequent steps. This behavioral loop persists even when the preceding runtime error trace is retained directly within the dialogue context.
+
+Existing agent memory frameworks, including Mem0 [2] and MemGPT [3], retrieve past context items effectively from text stores. However, these architectures treat negative prohibitions as passive text strings inside long prompts. When dialogue histories grow over multi-turn rollouts, attention weights disperse across irrelevant conversational tokens. Consequently, negative constraints get ignored, leading to repetitive execution errors during complex tool-use workflows.
+
+Fig. 1. First-try accuracy on negative (inhibition) and positive (preference) tasks. The four left groups are our runs on classical tasks with Qwen2.5-3B; the right groups are published results for larger models [1]. Our local numbers are low for every method and are not directly comparable with the published ones (Section VII).
+
+This work presents Contrastive Reflexive Memory (CRM), an execution layer that converts tool failures into structured reflex rules. Rather than appending error text to the prompt, CRM stores past failures in a local vector table. The system matches candidate tool calls against this store and blocks prohibited actions before execution.
+
+(1)
+
+Here eCS,i denotes the normalized trigger embedding, ainhibit,i is the forbidden action string, and asafe,i represents the audited fallback action.
+
+We implemented two execution actuators: CRM-Prompt for black-box API models and CRM-Mask for open-weight models. CRM-Prompt injects a targeted single-turn correction directly into the input context when a rule fires. CRM-Mask was designed to subtract logit biases from forbidden tokens during decoding. Our practical experiments revealed that CRM-Prompt operates reliably, whereas our initial prototype of CRM-Mask failed to steer generation effectively. We document these empirical discrepancies and their technical causes in Section VII.
+
+We formulate failure memory as a local buffer of reflex rules paired with a fast cosine similarity router, avoiding full model fine-tuning.
+
+We systematically evaluate the router. At threshold tau = 0.35, it achieves 98.7% recall on 300 paraphrased probes with 0.0% false inhibition on benign prompts, running in 17.2 milliseconds on CPU.
+
+We report candid negative results for generative steering. On a 3B parameter model, prompt-level injection improved only marginally over plain generation, scoring below simple retrieval baselines. We detail these experimental limitations and boundary conditions in Section VII.
+
+II. PROBLEM FORMULATION
+
+This section outlines the benchmark evaluation protocol and the formal metrics used throughout our experiments.
+
+A. Implicit Memory Evaluation Protocol
+
+Following the experimental design of ImplicitMemBench [1], each evaluation task runs across three sequential stages: learning, distraction, and testing. The framework tests whether an agent can retain an implicit behavioral constraint across multi-turn conversational noise without explicit reminder prompts.
+
+Learning Phase (Tlearn): The agent receives prompt xlearn, executes candidate action ainhibit, and receives error trace uUS indicating an execution fault.
+
+Interference Phase (Tinterfere): The agent engages in M unrelated dialogue turns, introducing conversational noise that buries the earlier execution feedback.
+
+Testing Phase (Ttest): The agent receives evaluation query xtest and must generate target action asafe without repeating forbidden action ainhibit:
+
+(2)
+
+where yk is the k-th token of the action, C denotes prompt context, and y<k represents previously generated tokens.
+
+B. First-Try Accuracy and the Asymmetry Deficit
+
+We measure system performance using the First-Try Accuracy defined in (3):
+
+(3)
+
+where N is total evaluation tasks, asafe is the verified substitute action, ainhibit is the forbidden action, and I(.) is the indicator function. First-Try Accuracy requires the agent to emit the correct safe tool on its very first attempt while strictly avoiding the prohibited action.
+
+On positive preference tasks, the model merely reproduces the preferred tool. The asymmetry deficit Delta_asym captures the accuracy drop on negative prohibitions relative to positive preferences.
+
+C. Why Declarative Notes May Fail
+
+Standard vector databases retrieve past conversational records based on semantic similarity to the current query. However, this mechanism treats a strict negative prohibition as merely another piece of background context. When retrieved error notes are inserted into the system prompt, the language model must attend to inhibitory text while generating its next tool call. Autoregressive generation exhibits a strong positive induction bias: seeing tool tokens mentioned in the context often increases the probability of generating those same tokens. As the dialogue history expands over successive turns, attention weights assigned to earlier error notes decay. The model frequently outputs the forbidden action regardless of the retrieved text. In contrast, CRM moves inhibitory control outside the context window, enforcing constraints directly at the tool dispatch interface.
+
+III. CONTRASTIVE REFLEXIVE MEMORY ARCHITECTURE
+
+CRM extracts execution failures directly from runtime exception logs. Where declarative memory systems store narrative summaries of conversations, CRM extracts structured triples: a trigger embedding, the forbidden action, and an audited safe fallback. The architecture operates as a lightweight runtime circuit maintaining a local buffer of reflex rules, organized into three sequential modules: failure extraction, semantic routing, and inhibitory actuation.
+
+A. Stage 1: Conditioned Failure Extractor
+
+The architectural design draws inspiration from conditioned inhibition in behavioral psychology [9], [10]. Rather than treating memory as passive recall, CRM models failure recovery as an active conditioned reflex. When a tool execution fails, the runtime captures the environmental stimuli defined in (4), projecting the triggering instruction into the embedding space defined in (5). Each rule comprises three distinct components:
+
+Trigger Prompt Parsing (PCS,i): the raw user instruction that immediately preceded the prohibited tool call.
+
+Prohibited Tool Tagging (ainhibit,i): the exact tool identifier and argument signature that caused the failure, marked for suppression.
+
+Verified Fallback Assignment (asafe,i): the validated safe alternative action or argument configuration supplied by system feedback.
+
+(4)
+
+where uUS represents the set of environmental failure signals, including permission denied errors, file locking deadlocks, HTTP 429 rate limit exceptions, syntax errors, and explicit user corrections.
+
+(5)
+
+where femb is a compact 384-dimensional sentence encoder (all-MiniLM-L6-v2) that projects the trigger prompt into an L2-normalized vector eCS,i in R^D. The resulting rule ri is appended to reflex buffer R.
+
+B. Stage 2: Paraphrase-Invariant Semantic Router
+
+The semantic router embeds incoming user instructions and scores them against all stored failure rules in a single matrix pass across four steps:
+
+Query Encoding: when a new instruction xt arrives at turn t, the encoder calculates normalized vector et = femb(xt) / ||femb(xt)||_2.
+
+Buffer Matrix Evaluation: the query vector is multiplied against the stored trigger matrix ER in a single matrix-vector product, as expressed in (6).
+
+Winner-Take-All Selection: the index corresponding to the highest cosine similarity score is selected via the argmax operation in (7).
+
+Threshold Gating: if the top similarity score si* equals or exceeds decision threshold tau, the inhibitory gate in (8) activates the reflex; below tau, the gate remains 0 and execution proceeds unaltered.
+
+(6)
+
+where ER is the K x D matrix of stored trigger vectors, and s is the resulting vector of cosine similarities.
+
+(7)
+
+which yields index i* of the stored rule exhibiting the highest semantic similarity to the incoming prompt.
+
+(8)
+
+We select tau = 0.35. Section V-C evaluates the empirical sensitivity of this parameter and demonstrates how narrow the operational margin is.
+
+C. Stage 3: Contrastive Inhibitory Actuator
+
+CRM-Prompt targets black-box API services, whereas CRM-Mask targets open-weight models. CRM-Prompt injects a directive before the user prompt as shown in (9), relying on in-context conditioning [11] without retraining [7]. CRM-Mask subtracts a large negative penalty from the logits of forbidden tool tokens prior to sampling, as defined in (10).
+
+CRM-Prompt: for API endpoints without logit access, the actuator prepends a short steering directive immediately before the user query. A directive placed at recency offset zero receives higher attention weight than notes situated further back in conversational history.
+
+CRM-Mask: for local deployments with full decoding access, the actuator subtracts penalty beta from the logits of forbidden tool tokens. In our experiments, this variant operated via Ollama stop sequences and prefix interception rather than direct logit manipulation (Section VII).
+
+(9)
+
+where the directive suppresses ainhibit and enforces asafe inside the immediate attention window. The experimental wording used plain text: 'Execution Rule: Avoid ainhibit. Call asafe directly.'
+
+(10)
+
+where zk,v is the raw logit of vocabulary token v at decoding step k, and beta > 0 is a penalty subtracted from tokens in forbidden vocabulary Vinhibit.
+
+IV. EXPERIMENTAL SETUP
+
+A. Task Suite
+
+We evaluate CRM on a 200-task suite modeled on ImplicitMemBench [1]. As an independent re-creation, absolute scores are not directly comparable to published benchmarks. The suite contains four parts:
+
+Classical Conditioning (100 tasks): positive preference and negative inhibition tasks covering API version limits, file permissions, communication tone, and security boundaries.
+
+Procedural Memory (100 tasks): multi-step workflows including reversed argument order, custom session tokens, and strict output formatting.
+
+Paraphrase probes (300): three versions per classical trigger: exact, lexical (synonym substitution), and structural (syntactic inversion).
+
+Benign controls (100): general developer queries designed to test false inhibition rates.
+
+We reserve 40 tasks as a development set for selecting directive wording and report final results on the remaining 160 non-overlapping tasks.
+
+B. Systems and Inference Setup
+
+We compare four configurations: Vanilla (no memory), Declarative Retrieval (Mem0-style top-3 vector retrieval [2], [3]), CRM-Prompt (prepended directive at router score >= 0.35), and CRM-Mask (stop-sequence variant [12]).
+
+All evaluations ran locally via Ollama on an 8-core CPU with Qwen2.5-3B-Instruct, greedy decoding (T=0.0), and a 128-token limit. Each test prompt follows 8 unrelated distractor turns, except during horizon tests. All logs record real model calls.
+
+V. RESULTS
+
+A. Main Benchmark
+
+Table I summarizes reference benchmark numbers from [1], while Table II presents our primary empirical findings on the 160 test tasks.
+
+TABLE I  Published First-Try Accuracy (FTA %) from Qin et al. [1], shown for reference only. Our task suite is a re-creation and is not directly comparable.
+
+TABLE II  Our results on the 160 test tasks (Qwen2.5-3B-Instruct, Ollama, M=8, 3 seeds, 480 trials per system). FTA is the first-try accuracy of (3) with a 95% Wilson interval. The last two columns give how often the safe call appears and how often the forbidden call is avoided.
+
+Plain generation achieves only 3.3% FTA on negative prohibition tasks. The retrieval baseline achieves 19.4%, the highest among all systems, while CRM-Prompt reaches 10.2%. A paired comparison across identical seed and task pairs favors Mem0 over CRM-Prompt (67 tasks where only Mem0 succeeds, versus 23 where only CRM-Prompt succeeds; McNemar test p < 0.001), and favors CRM-Prompt over vanilla (40 versus 7; p < 0.001). This divergence arises predominantly on procedural tasks, where Mem0 attains 30.4% compared to 10.8% for CRM-Prompt. On classical inhibition tasks, confidence intervals overlap, indicating comparable performance between retrieval and CRM-Prompt.
+
+Failure analysis indicates that task failures rarely stem from blatant violations. All four configurations avoid the prohibited tool in 76% to 92% of trials, with CRM-Mask avoiding it in 91.5% of cases. However, emitting the correct safe action is rare: CRM-Prompt produces it in 19.8% of trials and CRM-Mask in only 1.9%. The 3B model often outputs conversational explanations, clarifying questions, or refusals (Fig. 2) instead of executing the tool call. A flexible evaluation metric accepting paraphrased invocations would yield higher success rates, though this was not audited manually.
+
+Fig. 2. One real transcript from the main benchmark (scenario classical_017, seed 137). Responses are shortened. Only the CRM-Prompt output uses the safe call; the other three do not.
+
+B. Paraphrase Robustness and Interference Horizon
+
+Table III details accuracy across four paraphrase tiers on 80 classical tasks with one seed. Accuracies remain low with overlapping confidence intervals, and CRM-Prompt matches vanilla performance across all tiers. Consequently, retention rates are omitted, as ratios between low single-digit percentages provide limited statistical signal.
+
+TABLE III  FTA (%) with 95% intervals by paraphrase tier (80 classical tasks, one seed).
+
+Fig. 3. First-try accuracy by paraphrase tier on 80 classical tasks, one seed. CRM-Prompt and vanilla have identical values, which we could not explain (Section VII).
+
+Table IV evaluates accuracy as distractor turns increase from M = 4 to M = 30 across 30 classical tasks with one seed, where prompt length expands from 194 to 856 tokens. Performance remains stable across distractor lengths within the variance of 30 tasks. The M = 120 condition failed to complete (3 tasks finished per system) and is excluded from reporting.
+
+TABLE IV  FTA (%) for increasing distractor turns M (30 classical tasks, one seed, measured prompt tokens in the first row).
+
+C. Router Sensitivity and False Inhibition
+
+The semantic router represents the most robust component of CRM. We swept decision threshold tau across 300 paraphrased probes and 100 benign control prompts (Table V and Fig. 4). At tau = 0.15, the gate triggers indiscriminately, producing a 99.0% false inhibition rate (FIR). At tau = 0.35, recall reaches 98.7% (99% exact, 99% lexical, 98% structural) while FIR drops to 0.0%, achieving 100.0% precision and a 99.3% F1 score. Above tau = 0.35, recall declines steadily to 57.7% at tau = 0.65. Because FIR reaches 10.0% at tau = 0.30, the operational threshold window is narrow. Note that this test validates routing precision, not downstream generative behavior.
+
+TABLE V  Router sensitivity: 300 paraphrased probes and 100 benign prompts for each threshold τ.
+
+Fig. 4. Router operating characteristic. Recall is measured on 300 paraphrased triggers and the false inhibition rate on 100 benign prompts.
+
+Routing latency is minimal. Across 100 stored failure rules, end-to-end lookup required a median of 17.2 ms (95th percentile: 26.2 ms) over 1,000 queries on a laptop CPU. The query embedding step accounts for 17.2 ms, whereas the matrix-vector dot product requires only 16.5 microseconds.
+
+D. Directive Wording on the Development Set
+
+Table VI compares five directive phrasing variants on 40 development tasks without distractor turns. Due to overlapping intervals, candidate 3 ('Execution Rule: Avoid X. Call Y directly.') achieved the lowest score (22.5%) yet was selected for primary test runs in Table II. Candidate 5 achieved the highest development score (32.5%), indicating that test results for CRM-Prompt likely understate performance achievable with optimized phrasing.
+
+TABLE VI  Directive wording on the 40 development tasks (no distractor turns).
+
+VI. RELATED WORK
+
+A. Agent Memory and Episodic Retrieval Systems
+
+Agent frameworks manage long-term state primarily via episodic context stores and verbal self-reflection [2], [3], [4]. Reflexion [4] and ReAct [5] prompt models to inspect execution errors and append textual post-mortems to the prompt, which aids single-session recovery but fades over extended dialogues.
+
+Retrieval-augmented architectures like Mem0 [2] and MemGPT [3] maintain historical facts by indexing dialogue chunks into vector stores. Qin et al. [1] demonstrated in ImplicitMemBench that vector retrieval struggles with negative constraints, as stored prohibitions compete passively against token generation probabilities [8].
+
+B. Constrained Decoding and Policy Steering
+
+Policy alignment typically modifies model weights via reinforcement learning from human feedback or Direct Preference Optimization [7]. Toolformer [6] fine-tunes models to invoke tools autonomously. While offline updates establish reliable baseline policies, they cannot adapt to runtime operational shifts such as credential revocations. Inference-time steering preserves model weights through few-shot prompting [11] or constrained decoding [12], an approach CRM adapts for tool-using agents.
+
+C. Biologically Inspired Conditioned Inhibition
+
+CRM draws on classical Pavlovian conditioning and the Rescorla-Wagner model of associative learning [9], [10]. In biological nervous systems, conditioned inhibition allows organisms to suppress reflexive actions when paired with inhibitory stimuli. We map the conditioned stimulus (PCS) and execution feedback (uUS) onto routing tuples, providing a functional design blueprint for agent runtimes.
+
+VII. LIMITATIONS
+
+Our empirical evidence reflects several specific operational bounds that should guide interpretation of the findings:
+
+Task suite: the 200 tasks constitute an independent re-creation of ImplicitMemBench; published figures in Table I reflect a different environment and are not directly comparable.
+
+Model and scale: evaluations were restricted to a single 3B parameter model on CPU. Small local baselines exhibit low absolute accuracy, leaving open how CRM scales to larger frontier models.
+
+Experimental scope: paraphrase and distractor horizon sweeps were limited to 80 and 30 tasks with one seed, and the M = 120 condition was aborted. Paraphrase runs showed identical scores between CRM-Prompt and vanilla, an anomaly requiring further audit.
+
+CRM-Mask implementation: our actuator relied on stop sequences and prefix matching rather than true logit editing, scoring only 1.9%. True logit bias manipulation remains unverified.
+
+Directive formulation: the phrasing applied in main test runs scored lowest during development evaluations, and the top-performing development variant was not tested on the final benchmark.
+
+Evaluation metric: First-Try Accuracy requires an exact string match against the expected safe tool call, treating semantically equivalent alternative formulations as execution failures.
+
+Router validation: the benign control set was limited to 100 prompts. At tau = 0.30, false inhibition rises to 10.0%, indicating a narrow operational window. Routing overhead scales asymptotically as O(KD), necessitating approximate nearest neighbor search for larger rule bases.
+
+VIII. CONCLUSION AND FUTURE WORK
+
+We presented Contrastive Reflexive Memory, an architectural layer that converts tool execution failures into structured reflex rules evaluated via a single matrix-vector product. The semantic router demonstrated strong performance: 98.7% recall on paraphrased triggers with 0.0% false inhibition on benign prompts at tau = 0.35, requiring 17.2 milliseconds on CPU. However, generative steering proved less effective on small models. While prompt injection improved upon plain generation, it lagged behind retrieval baselines, and prefix-based masking failed to steer decoding reliably.
+
+Future investigations will evaluate direct logit manipulation during transformer decoding, test development-winning directives across all seeds, and expand horizon sweeps on GPU clusters. Developing flexible evaluation metrics that recognize alternative valid tool calls will provide a more comprehensive assessment of negative-association memory.
+
+REFERENCES
+
+[1]	Y. Qin, S. Wang, X. Zhao, Y. Lin, Z. Liu, and M. Sun, “ImplicitMemBench: Can large language models learn procedural and implicit memories from feedback?,” in Proc. 64th Annu. Meeting Assoc. Comput. Linguistics (ACL), 2026.
+
+[2]	P. Chhikara, T. Sharma, and D. Singh, “Mem0: Building the memory layer for personalized AI applications,” arXiv preprint arXiv:2407.03224, 2024.
+
+[3]	C. Packer, V. Fang, S. G. Patil, K. Lin, S. Wooders, and J. E. Gonzalez, “MemGPT: Towards LLMs as operating systems,” arXiv preprint arXiv:2310.08560, 2023.
+
+[4]	N. Shinn, F. Cassano, E. Labash, A. Gopinath, K. Narasimhan, and S. Yao, “Reflexion: Language agents with verbal reinforcement learning,” in Adv. Neural Inf. Process. Syst. (NeurIPS), vol. 36, pp. 8634–8652, 2023.
+
+[5]	S. Yao, J. Zhao, D. Yu, N. Du, I. Shafran, K. Narasimhan, and Y. Cao, “ReAct: Synergizing reasoning and acting in language models,” in Int. Conf. Learn. Represent. (ICLR), 2023.
+
+[6]	T. Schick, J. Dwivedi-Yu, R. Dessi, R. Raileanu, M. Lomeli, L. Zettlemoyer, N. Cancedda, and T. Scialom, “Toolformer: Language models can teach themselves to use tools,” in Adv. Neural Inf. Process. Syst. (NeurIPS), vol. 36, pp. 68539–68551, 2023.
+
+[7]	R. Rafailov, A. Sharma, E. Mitchell, S. Ermon, C. D. Manning, and C. Finn, “Direct preference optimization: Your language model is secretly a reward model,” in Adv. Neural Inf. Process. Syst. (NeurIPS), vol. 36, pp. 53728–53741, 2023.
+
+[8]	A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, L. Kaiser, and I. Polosukhin, “Attention is all you need,” in Adv. Neural Inf. Process. Syst. (NeurIPS), vol. 30, 2017.
+
+[9]	I. P. Pavlov, Conditioned Reflexes: An Investigation of the Physiological Activity of the Cerebral Cortex. London: Oxford Univ. Press, 1927.
+
+[10]	R. A. Rescorla and A. R. Wagner, “A theory of Pavlovian conditioning: Variations in the effectiveness of reinforcement and nonreinforcement,” in Classical Conditioning II: Current Research and Theory, A. H. Black and W. F. Prokasy, Eds. New York: Appleton-Century-Crofts, 1972, pp. 64–99.
+
+[11]	T. Brown et al., “Language models are few-shot learners,” in Adv. Neural Inf. Process. Syst. (NeurIPS), vol. 33, pp. 1877–1901, 2020.
+
+[12]	H. Touvron et al., “LLaMA: Open and efficient foundation language models,” arXiv preprint arXiv:2302.13971, 2023.
+
